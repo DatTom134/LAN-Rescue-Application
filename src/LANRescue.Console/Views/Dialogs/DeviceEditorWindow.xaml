@@ -1,0 +1,370 @@
+<Window x:Class="LANRescue.ConsoleApp.Views.Dialogs.DeviceEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Device profile"
+        Width="900"
+        Height="820"
+        MinWidth="760"
+        MinHeight="680"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="{DynamicResource AppBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        FontFamily="Segoe UI"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        
+        <Border Grid.Row="0"
+                Height="58"
+                Margin="0,0,0,18"
+                Background="Transparent"
+                MouseLeftButtonDown="DialogHeader_MouseLeftButtonDown">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Title -->
+                <StackPanel Grid.Column="0"
+                            VerticalAlignment="Center">
+
+                    <TextBlock x:Name="DialogTitleText"
+                            Text="Add device"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+                    <TextBlock
+                        Text="Enter the inventory identity and the latest known configuration."
+                        FontSize="12"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <!-- Close button -->
+                <Button Grid.Column="1"
+                        Content="×"
+                        Width="36"
+                        Height="36"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="22"
+                        Click="Cancel_Click"
+                        ToolTip="Close window"/>
+            </Grid>
+        </Border>
+
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="0,0,8,12">
+            <StackPanel>
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="14"
+                        Padding="18"
+                        Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="DEVICE IDENTITY"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Device code *"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="DeviceCodeBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Device name / hostname *"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="DeviceNameBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Device type"
+                                           Margin="0,0,0,5"/>
+                                <ComboBox x:Name="DeviceTypeCombo"
+                                          Height="38"
+                                          Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="2"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Department"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="DepartmentBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Manufacturer"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="ManufacturerBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2"
+                                        Grid.Column="2"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Model"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="ModelBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,0">
+                                <TextBlock Text="Serial number"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="SerialNumberBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3"
+                                        Grid.Column="2">
+                                <TextBlock Text="Location"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="LocationBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="4"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="3"
+                                        Margin="0,12,0,0">
+                                <TextBlock Text="Firmware version"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="FirmwareVersionBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="14"
+                        Padding="18"
+                        Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="PRIMARY NETWORK INTERFACE"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Interface name"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="InterfaceNameBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="2"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="MAC address"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="MacAddressBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="0"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="IPv4 address"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="Ipv4Box"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="2"
+                                        Margin="0,0,0,12">
+                                <TextBlock Text="Prefix length"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="PrefixLengthBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2"
+                                        Grid.Column="0">
+                                <TextBlock Text="Address assignment"
+                                           Margin="0,0,0,5"/>
+                                <ComboBox x:Name="AssignmentModeCombo"
+                                          Height="38"
+                                          Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2"
+                                        Grid.Column="2">
+                                <TextBlock Text="Default gateway"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="GatewayBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="DNS servers (comma separated)"
+                                   Margin="0,12,0,5"/>
+                        <TextBox x:Name="DnsServersBox"
+                                 Height="38"
+                                 Padding="10,4"/>
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="PrinterDetailsPanel"
+                        Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="14"
+                        Padding="18"
+                        Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="PRINTER DETAILS"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Driver name"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="PrinterDriverBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Port name"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="PrinterPortBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Print server"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="PrintServerBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Share name"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="ShareNameBox"
+                                         Height="38"
+                                         Padding="10,4"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="14"
+                        Padding="18">
+                    <StackPanel>
+                        <TextBlock Text="NOTES"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   Margin="0,0,0,12"/>
+                        <TextBox x:Name="NotesBox"
+                                 MinHeight="74"
+                                 Padding="8"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2"
+                Margin="0,12,0,0"
+                Padding="0,12,0,0"
+                BorderBrush="{DynamicResource BorderBrushSoft}"
+                BorderThickness="0,1,0,0">
+            <DockPanel LastChildFill="False">
+                <TextBlock Text="* Required fields"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal">
+                    <Button Content="Cancel"
+                            Width="96"
+                            Height="38"
+                            Margin="0,0,8,0"
+                            IsCancel="True"
+                            Click="Cancel_Click"
+                            FontSize="13"/>
+                    <Button Content="Save device"
+                            Width="120"
+                            Height="38"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Foreground="{DynamicResource PrimaryButtonForegroundBrush}"
+                            Click="Save_Click"
+                            IsDefault="True"
+                            FontSize="13"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -6,4 +6,9 @@
     <RootNamespace>LANRescue.ConsoleApp</RootNamespace>
     <AssemblyName>LANRescue.Console</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LANRescue.Domain\LANRescue.Domain.csproj" />
+    <ProjectReference Include="..\LANRescue.Application\LANRescue.Application.csproj" />
+    <ProjectReference Include="..\LANRescue.Infrastructure\LANRescue.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>

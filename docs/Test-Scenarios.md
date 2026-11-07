@@ -1,25 +1,24 @@
-# Initial test scenarios
+# LAN Rescue test scenarios
 
-## Sample conflict scenario
+## Device catalog persistence
 
-- PC-A: 192.168.110.151/24
-- PC-B: 192.168.110.93/24
-- PC-C: 192.168.110.93/24
-- Gateway: 192.168.110.9
-- A's ARP cache currently maps 192.168.110.93 to C's MAC.
+1. Launch LAN Rescue and open Devices for the first time. Confirm six sample records are inserted.
+2. Close and reopen the app. Confirm records are loaded from SQLite and are not duplicated.
+3. Add a computer with a new device code, hostname, department and location. Confirm it appears in the list.
+4. Close and reopen the app. Confirm the added record remains.
+5. Add another record using the same DeviceCode with different letter casing. Confirm validation rejects it.
+6. Edit the first record's name and location. Confirm values persist after restart.
+7. Stop managing a record. Confirm it moves to Not managed, remains in All devices, and disappears from Managed only.
+8. Reactivate it. Confirm it appears in Managed only again.
+9. Add a printer and enter a driver, port, print server and share name. Confirm printer-specific details appear in the detail panel.
+10. Enter an invalid IPv4, invalid gateway, invalid DNS address or prefix outside 0–32. Confirm the editor blocks saving.
 
-Expected UI behavior:
-- Display a possible/known conflict as sample data.
-- Keep B and C as separate managed identities.
-- Never infer target identity from IP alone.
-- Never enable a real IP change in this version.
+## Identity and duplicate IP demonstration
 
-## Future acceptance test
+- Keep QA-PC-002 and QA-PC-003 as distinct sample rows with the same IPv4 address.
+- Confirm each has its own DeviceCode and internal GUID.
+- Do not merge or select a device based on IPv4 or ARP output alone.
 
-Only after Agent and management transport are implemented:
-- Authenticate B by its registered identity/certificate.
-- Reach B through an independent working management channel.
-- Apply an IP allocated/approved by IT.
-- Confirm C retains its original IP.
-- Verify B's new address, gateway, DNS and network reachability.
-- Roll back or report a safe failure if verification fails.
+## Not yet testable in this preview
+
+- Actual device discovery, SNMP/SSH/IPP polling, Agent communication, remote diagnostics and remote IP changes are not implemented.

@@ -19,7 +19,11 @@ publish/
 *.userosscache
 *.sln.docstates
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
+*.sqlite-wal
+*.sqlite-shm
 *.log
 
 # OS

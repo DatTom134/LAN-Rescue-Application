@@ -1,20 +1,76 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.SettingsView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel>
-        <TextBlock Text="Settings" FontSize="25" FontWeight="Bold"
-                   Foreground="{StaticResource TextPrimaryBrush}"/>
-        <TextBlock Text="Initial application settings and project information."
-                   Foreground="{StaticResource TextSecondaryBrush}" Margin="0,6,0,18"/>
-        <Border Background="White" CornerRadius="10" Padding="20">
-            <StackPanel>
-                <TextBlock Text="Application" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
-                <TextBlock Text="Product name: LAN Rescue" Margin="0,5"/>
-                <TextBlock Text="Version: 0.1.0" Margin="0,5"/>
-                <TextBlock Text="Framework: .NET 10 / WPF" Margin="0,5"/>
-                <TextBlock Text="Mode: UI prototype with sample data" Margin="0,5"/>
-                <TextBlock Text="Network operations: Disabled" Foreground="{StaticResource WarningBrush}" Margin="0,5"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <StackPanel Margin="0,0,0,20">
+                <TextBlock Text="Settings" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="Personalize the workspace and review application information."
+                           Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
             </StackPanel>
-        </Border>
-    </StackPanel>
+
+            <Border Style="{StaticResource GlassCardBorderStyle}" Margin="0,0,0,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Appearance" Style="{StaticResource SectionTitleTextStyle}"/>
+                        <TextBlock Text="Choose the color scheme used throughout LAN Rescue. The selection is saved for this Windows user."
+                                   Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
+                                   FontSize="12" Margin="0,6,18,0"/>
+                    </StackPanel>
+                    <ComboBox x:Name="ThemeSelector" Grid.Column="1" Height="38"
+                              VerticalAlignment="Center" SelectionChanged="ThemeSelector_SelectionChanged">
+                        <ComboBoxItem Content="Light theme" Tag="Light"/>
+                        <ComboBoxItem Content="Dark theme" Tag="Dark"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Window effects" Style="{StaticResource SectionTitleTextStyle}"/>
+                    <TextBlock Text="On supported Windows 11 versions, LAN Rescue requests the native Mica backdrop and rounded window corners. Popup menus use translucent surfaces and fade transitions."
+                               Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
+                               FontSize="12" Margin="0,7,0,0"/>
+                    <TextBlock Text="When these effects are unavailable, the application falls back to regular WPF surfaces and remains fully usable."
+                               Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
+                               FontSize="11" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel>
+                    <TextBlock Text="Application" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,10"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="34"/><RowDefinition Height="34"/>
+                            <RowDefinition Height="34"/><RowDefinition Height="34"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="34"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Product" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="LAN Rescue" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Text="Version" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="0.4.0-preview.2 · Fluent Glass UI" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="2" Text="Framework" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text=".NET 10 / WPF" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="3" Text="Storage" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="SQLite · Local device inventory" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="4" Text="Database path" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="%LOCALAPPDATA%\LANRescue\data\lanrescue.db"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,5,0,5"/>
+                        <TextBlock Grid.Row="5" Text="Network operations" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Text="Disabled in this preview"
+                                   Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

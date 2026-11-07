@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LANRescue.Infrastructure</RootNamespace>
+    <AssemblyName>LANRescue.Infrastructure</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LANRescue.Domain\LANRescue.Domain.csproj" />
+    <ProjectReference Include="..\LANRescue.Application\LANRescue.Application.csproj" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageReference Include="System.Management" Version="10.0.14" />
+  </ItemGroup>
+</Project>

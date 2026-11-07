@@ -1,36 +1,166 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.DevicesView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             UseLayoutRounding="True" SnapsToDevicePixels="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <TextBlock Text="Managed devices" FontSize="25" FontWeight="Bold"
-                       Foreground="{StaticResource TextPrimaryBrush}"/>
-            <TextBlock Text="Sample inventory. Discovery and live Agent status are not implemented yet."
-                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,6,0,18"/>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Managed devices" Style="{StaticResource PageTitleTextStyle}"/>
+            <TextBlock Text="Device identity, network configuration and management status."
+                       Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
         </StackPanel>
-        <DockPanel Grid.Row="1" Margin="0,0,0,14">
-            <TextBox x:Name="SearchBox" Width="280" Height="34" Padding="8"
-                     VerticalContentAlignment="Center" TextChanged="SearchBox_TextChanged"
-                     ToolTip="Search by device, IP, or Rescue ID"/>
-            <TextBlock Text="  SAMPLE DATA" VerticalAlignment="Center"
-                       Foreground="{StaticResource WarningBrush}" FontWeight="SemiBold" FontSize="10"/>
-        </DockPanel>
-        <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="10">
-            <DataGrid x:Name="DevicesGrid" ItemsSource="{Binding Devices}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Device" Binding="{Binding DeviceName}" Width="1.1*"/>
-                    <DataGridTextColumn Header="Rescue ID" Binding="{Binding RescueId}" Width="1.2*"/>
-                    <DataGridTextColumn Header="IPv4" Binding="{Binding IPv4}" Width="1.1*"/>
-                    <DataGridTextColumn Header="MAC Address" Binding="{Binding MacAddress}" Width="1.5*"/>
-                    <DataGridTextColumn Header="Agent" Binding="{Binding AgentStatus}" Width="0.8*"/>
-                    <DataGridTextColumn Header="IP Status" Binding="{Binding IpStatus}" Width="1*"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+
+        <WrapPanel Grid.Row="1" Margin="0,0,0,14" VerticalAlignment="Center">
+            <TextBox x:Name="SearchBox" Width="220" Height="38" Margin="0,0,8,8"
+                     TextChanged="SearchBox_TextChanged"
+                     ToolTip="Search by code, name, IP, MAC, hardware, department or location"/>
+            <ComboBox x:Name="FilterComboBox" Width="144" Height="38" Margin="0,0,12,8"
+                      SelectionChanged="FilterComboBox_SelectionChanged">
+                <ComboBoxItem Content="All devices" IsSelected="True"/>
+                <ComboBoxItem Content="Managed only"/>
+                <ComboBoxItem Content="Not managed"/>
+            </ComboBox>
+            <TextBlock x:Name="RecordCountText" Text="Loading device catalog..." Margin="0,0,12,8"
+                       VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}"
+                       FontWeight="SemiBold" FontSize="11"/>
+            <Button x:Name="NewDeviceButton" Content="＋  New device" Height="38" Margin="0,0,8,8"
+                    Style="{StaticResource PrimaryButtonStyle}" Click="NewDevice_Click"/>
+            <Button x:Name="EditDeviceButton" Content="Edit" Height="38" Margin="0,0,8,8"
+                    IsEnabled="False" Click="EditDevice_Click"/>
+            <Button x:Name="StopManagingButton" Content="Stop managing" Height="38"
+                    Margin="0,0,8,8" Style="{StaticResource DangerButtonStyle}"
+                    IsEnabled="False" Click="StopManaging_Click"/>
+            <Button x:Name="ReactivateButton" Content="Reactivate" Height="38" Margin="0,0,0,8"
+                    IsEnabled="False" Click="Reactivate_Click"/>
+        </WrapPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="470"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Padding="8">
+                <DataGrid x:Name="DevicesGrid" SelectionChanged="DevicesGrid_SelectionChanged"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          CanUserResizeRows="False" CanUserSortColumns="True"
+                          SelectionMode="Single" PreviewMouseRightButtonDown="DevicesGrid_PreviewMouseRightButtonDown">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy device code" Click="CopyDeviceCode_Click"/>
+                            <MenuItem Header="Copy IPv4 address" Click="CopyIpv4_Click"/>
+                            <Separator/>
+                            <MenuItem Header="Edit device" Click="EditDevice_Click"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Device code" Binding="{Binding DeviceCode}" Width="1.05*"/>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Device name" Binding="{Binding DeviceName}" Width="1.15*"/>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Type" Binding="{Binding DeviceType}" Width="0.72*"/>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="IPv4 / Prefix" Binding="{Binding IPv4}" Width="1.05*"/>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Location" Binding="{Binding Location}" Width="1.1*"/>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Network" Binding="{Binding Reachability}" Width="0.8*"/>
+                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Management" Binding="{Binding ManagementStatus}" Width="1.0*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <Border x:Name="DetailsPanel" Grid.Column="2" Style="{StaticResource GlassCardBorderStyle}"
+                    Padding="0" ClipToBounds="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="DEVICE INSPECTOR" FontSize="10" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryBrush}" Margin="0,0,0,12"/>
+                        <TextBlock Text="{Binding DeviceName}" FontSize="17" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding DeviceCode}" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,3,0,8"/>
+                        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="9" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="NETWORK · STATUS" FontSize="10" FontWeight="Bold"
+                                           Foreground="{DynamicResource PrimaryBrush}" Margin="0,0,0,5"/>
+                                <TextBlock FontSize="11" FontWeight="SemiBold">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} · {1}">
+                                            <Binding Path="Reachability"/>
+                                            <Binding Path="IpStatus"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <TextBlock Text="IPv4 / Prefix" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10" Margin="0,8,0,1"/>
+                                <TextBlock Text="{Binding IPv4}" FontSize="12" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding IpAssignment}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="DEVICE INFORMATION" FontSize="10" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryBrush}" Margin="0,0,0,7"/>
+                        <TextBlock Text="Type · Department" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Margin="0,1,0,7" FontSize="11">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} · {1}">
+                                    <Binding Path="DeviceType"/>
+                                    <Binding Path="Department"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="Manufacturer · Model" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding Hardware}" FontSize="11" Margin="0,1,0,7" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="Serial number" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding SerialNumber}" FontSize="11" Margin="0,1,0,7"/>
+                        <TextBlock Text="Operating system" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding OperatingSystem}" FontSize="11" Margin="0,1,0,7" TextWrapping="Wrap"/>
+                        <TextBlock Text="Location" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding Location}" FontSize="11" Margin="0,1,0,12" TextWrapping="Wrap"/>
+
+                        <TextBlock Text="NETWORK INTERFACE" FontSize="10" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryBrush}" Margin="0,0,0,7"/>
+                        <TextBlock Text="Interface · Link" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Margin="0,1,0,7" FontSize="11">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} · {1}">
+                                    <Binding Path="NetworkInterfaceName"/>
+                                    <Binding Path="LinkStatus"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="MAC address" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding MacAddress}" FontSize="11" Margin="0,1,0,7"/>
+                        <TextBlock Text="Default gateway" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding Gateway}" FontSize="11" Margin="0,1,0,7"/>
+                        <TextBlock Text="DNS servers" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding DnsServers}" FontSize="11" Margin="0,1,0,7" TextWrapping="Wrap"/>
+                        <TextBlock Text="All interfaces / addresses" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding AllNetworkInterfaces}" FontSize="11" Margin="0,1,0,12" TextWrapping="Wrap"/>
+
+                        <TextBlock Text="MANAGEMENT CHANNEL" FontSize="10" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryBrush}" Margin="0,0,0,7"/>
+                        <TextBlock Text="Management path" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding ManagementChannels}" FontSize="11" Margin="0,1,0,7" TextWrapping="Wrap"/>
+                        <TextBlock Text="Agent ID" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding AgentId}" FontSize="11" Margin="0,1,0,7" TextWrapping="Wrap"/>
+                        <TextBlock Text="Agent status · Version" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock FontSize="11" Margin="0,1,0,7">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} · {1}">
+                                    <Binding Path="AgentStatus"/>
+                                    <Binding Path="AgentVersion"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Text="Last heartbeat" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding LastHeartbeat}" FontSize="11" Margin="0,1,0,7"/>
+                        <TextBlock Text="Device-specific details" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{Binding DeviceSpecificDetails}" FontSize="10" Margin="0,1,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

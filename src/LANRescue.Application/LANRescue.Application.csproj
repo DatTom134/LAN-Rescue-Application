@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LANRescue.Application</RootNamespace>
+    <AssemblyName>LANRescue.Application</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LANRescue.Domain\LANRescue.Domain.csproj" />
+  </ItemGroup>
+</Project>

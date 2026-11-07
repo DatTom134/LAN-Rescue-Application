@@ -1,23 +1,33 @@
-# LAN Rescue v0.1.0
+# LAN Rescue v0.4.1 – Fresh Fluent
 
-LAN Rescue is a Windows desktop project for diagnosing LAN connectivity and preparing a safe remote IP recovery workflow.
+LAN Rescue is a Windows desktop project for inventorying IT-managed endpoints and preparing a safe remote network-recovery workflow.
 
-## Current scope
+## What's included
 
-This first source package contains:
-- WPF Console shell and navigation.
-- Dashboard, Devices, IP Conflicts, IP Recovery, Diagnostics, and Settings screens.
-- Sample-only device data to demonstrate the intended workflow.
-- A preliminary folder layout for later Console/Agent separation.
+- WPF Console with Dashboard, Devices, IP Conflicts, IP Recovery, Diagnostics and Settings screens.
+- Fresh Fluent – Bright Blue / Sky Glass resource system with Light/Dark themes and a saved per-user theme preference.
+- Native Windows 11 Mica / transient backdrop and rounded-corner requests with a normal WPF fallback.
+- Shared rounded Fluent styles, hover/pressed/focus/disabled states, fade transitions, combo-box popups and context menus.
+- Fresh Fluent Light/Dark surface hierarchy: application frame, content canvas, card, elevated popup and input surfaces; bright blue accent and restrained semantic status colors.
+- Standardized spacing and control dimensions; Devices toolbar wraps at narrow widths.
+- Standardized DataGrid rows to 46px, headers to 44px, and truncates long cell values with ellipses.
+- Devices workspace redesigned with a searchable/filterable table and a right-side device inspector.
+- Device context menu to copy device code, copy IPv4 and edit the selected device.
+- Separate Domain, Application and Infrastructure projects.
+- Persistent local device catalog using SQLite (`Microsoft.Data.Sqlite` 10.0.14).
+- Create and edit device records, including IT-defined code, native device name, device type, department, location, hardware, primary network interface, IPv4/prefix, MAC, gateway, DNS and basic printer queue details.
+- Soft retirement and reactivation of device records; no permanent delete action.
+- Case-insensitive unique `DeviceCode` and unique registered `AgentId` constraints.
+- Sample data initialization only when the database is empty.
 
-**Important:** All device states and IP conflict records in this version are sample data. This version does not discover real devices, connect to an Agent, change IP settings, or run remote commands.
+**Still not implemented:** real network discovery, SNMP/SSH/IPP polling, Agent enrollment/communication, endpoint control, IP changes or remote command execution. Network reachability and Agent values shown in sample records are not live measurements.
 
 ## Requirements
 
 - Windows 10/11
 - .NET 10 SDK
-- Visual Studio Code
-- C# Dev Kit extension (recommended)
+- Visual Studio Code with C# Dev Kit
+- Network access to NuGet during first restore
 
 ## Run
 
@@ -30,31 +40,51 @@ dotnet build .\LANRescue.sln
 dotnet run --project .\src\LANRescue.Console\LANRescue.Console.csproj
 ```
 
+## UI themes and backdrop
+
+Use the theme toggle in the top bar or open **Settings → Appearance** to switch between Light and Dark. The choice is persisted at:
+
+```text
+%LOCALAPPDATA%\LANRescue\settings\theme.txt
+```
+
+On supported Windows 11 builds, the application requests Mica for the main window, a transient backdrop for the device editor dialog, rounded corners and native dark title-bar treatment. When DWM attributes are unavailable, regular WPF surface brushes are used. ComboBox and ContextMenu popups use translucent XAML surfaces; they do not use a separate native Acrylic DWM backdrop in this preview.
+
+See [docs/Fluent-Glass-UI.md](docs/Fluent-Glass-UI.md) for material behavior and [docs/Fresh-Fluent-Color-System-v0.4.1.md](docs/Fresh-Fluent-Color-System-v0.4.1.md) for the updated layout, palette and contrast audit.
+
+## Local data
+
+SQLite database:
+
+```text
+%LOCALAPPDATA%\LANRescue\data\lanrescue.db
+```
+
+Theme preference:
+
+```text
+%LOCALAPPDATA%\LANRescue\settings\theme.txt
+```
+
+## Device identity and safety rules
+
+1. `Id` is the stable internal database key (GUID).
+2. `DeviceCode` is the IT-assigned inventory identifier, unique without case sensitivity.
+3. `DeviceName` is the hostname or printer name and is not a permanent identity.
+4. IP and MAC addresses are mutable observations, never primary keys.
+5. A LAN Rescue Agent must have its own authenticated `AgentId`, independent of IPv4/MAC.
+6. Never store passwords, private keys, tokens or SNMP community secrets in inventory records.
+7. Device retirement uses `IsManaged = false`; the record is retained.
+8. Do not attempt IP recovery until device identity is verified through an authenticated management channel and the change has allocation checks, backup and rollback.
+
 ## Project structure
 
-- `src/LANRescue.Console`: WPF UI.
-- `src/LANRescue.Application`: placeholder for use cases and interfaces.
-- `src/LANRescue.Domain`: placeholder for domain entities.
-- `src/LANRescue.Contracts`: placeholder for Console-Agent messages.
-- `src/LANRescue.Infrastructure`: placeholder for Windows/network integrations.
+- `src/LANRescue.Console`: WPF UI, view models/presentation adapters, Fresh Fluent theme resources and Fluent window integration.
+- `src/LANRescue.Domain`: device entities, enums and validation rules.
+- `src/LANRescue.Application`: device-catalog use cases and repository contract.
+- `src/LANRescue.Infrastructure`: SQLite persistence implementation.
+- `src/LANRescue.Contracts`: placeholder for versioned Console-Agent messages.
 - `src/LANRescue.Agent`: placeholder for a future Windows Service.
-- `docs`: architecture and testing notes.
-
-Placeholder folders contain `.gitkeep` files until their first implementation.
-
-## Safe development plan
-
-1. Finish the UI shell and sample screens.
-2. Define device identity and Agent communication contracts.
-3. Prototype IPv6 link-local connectivity in an isolated test environment.
-4. Add read-only diagnostics.
-5. Implement remote IP changes only after identity verification, authorization, configuration backup, and rollback are in place.
-6. Test against lab devices before using on a production network.
-
-## Sample network scenario
-
-- PC-A: `192.168.110.151/24`, gateway `192.168.110.9`
-- PC-B: `192.168.110.93/24`, gateway `192.168.110.9`
-- PC-C: `192.168.110.93/24`, gateway `192.168.110.9`
-
-The UI intentionally displays B and C as a sample IP conflict. It does not infer which MAC owns the IP from ARP and does not perform any network action.
+- `docs/Device-Data-Model.md`: device data model.
+- `docs/SQLite-Device-Catalog.md`: SQLite schema and operation notes.
+- `docs/Fluent-Glass-UI.md`: UI theme, controls, backdrops and transition notes.
