@@ -17,6 +17,14 @@ public sealed class NetworkAdapterDisplayItem
 
     public string Name => _source.Name;
 
+    // Nhóm adapter do Windows Network Adapter Provider phân loại.
+    public NetworkInterfaceCategory Category =>
+        _source.Category;
+
+    // Chỉ được xem là Up khi Windows báo LinkStatus = Up.
+    public bool IsUp =>
+        _source.LinkStatus == NetworkLinkStatus.Up;
+
     public string Description =>
         _source.Description ?? "Description unavailable";
 
@@ -27,13 +35,13 @@ public sealed class NetworkAdapterDisplayItem
                 "Physical adapters",
 
             NetworkInterfaceCategory.Software =>
-                "Software / virtual interfaces",
+                "Software-reported interfaces",
 
             NetworkInterfaceCategory.Tunnel =>
                 "Tunnel interfaces",
 
             _ =>
-                "Other / unclassified interfaces"
+                "Unclassified / other interfaces"
         };
 
     public int CategoryOrder =>
@@ -99,4 +107,13 @@ public sealed class NetworkAdapterDisplayItem
             System.Net.IPAddress.TryParse(address, out var ip) &&
             ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
         ?? "Not configured";
+
+    /// <summary>
+    /// Loại giao diện mạng được Windows cung cấp.
+    /// Dùng CategoryDisplayName làm giá trị thay thế nếu không có InterfaceType.
+    /// </summary>
+    public string InterfaceTypeText =>
+        string.IsNullOrWhiteSpace(_source.InterfaceType)
+            ? CategoryDisplayName
+            : _source.InterfaceType;
 }
