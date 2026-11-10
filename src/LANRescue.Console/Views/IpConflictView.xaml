@@ -1,9 +1,11 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.IpConflictView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:LANRescue.ConsoleApp.Controls"
              xmlns:local="clr-namespace:LANRescue.ConsoleApp.Views">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-      <StackPanel>
+    <controls:SmoothScrollViewer Style="{StaticResource PageScrollViewerStyle}">
+        <Border Style="{StaticResource PageContentContainerStyle}">
+            <StackPanel>
         <StackPanel Margin="0,0,0,20">
             <TextBlock Text="IP conflicts" Style="{StaticResource PageTitleTextStyle}"/>
             <TextBlock Text="Illustrative conflict records. The ARP cache alone cannot identify the intended target."
@@ -41,6 +43,7 @@
                 </DataGrid>
             </StackPanel>
         </Border>
-      </StackPanel>
-    </ScrollViewer>
+            </StackPanel>
+        </Border>
+    </controls:SmoothScrollViewer>
 </UserControl>

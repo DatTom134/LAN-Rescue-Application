@@ -1,8 +1,10 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.IpRecoveryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:LANRescue.ConsoleApp.Controls">
+    <controls:SmoothScrollViewer Style="{StaticResource PageScrollViewerStyle}">
+        <Border Style="{StaticResource PageContentContainerStyle}">
+            <StackPanel>
             <StackPanel Margin="0,0,0,20">
                 <TextBlock Text="IP recovery" Style="{StaticResource PageTitleTextStyle}"/>
                 <TextBlock Text="Design preview for a controlled remote IP change workflow."
@@ -19,7 +21,17 @@
                 </StackPanel>
             </Border>
 
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
+            <Grid x:Name="RecoveryCardsGrid" SizeChanged="RecoveryCardsGrid_SizeChanged">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="0"/>
+                </Grid.RowDefinitions>
+            <Border x:Name="RecoveryTargetCard" Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="1. Target device" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,12"/>
                     <Grid>
@@ -40,7 +52,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
+            <Border x:Name="RecoveryConfigCard" Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="2. New network configuration" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,14"/>
                     <TextBlock Text="Address mode" Margin="0,0,0,5" FontSize="11"/>
@@ -77,8 +89,10 @@
                                Foreground="{DynamicResource WarningBrush}" Margin="0,14,0,0" TextWrapping="Wrap" FontSize="11"/>
                 </StackPanel>
             </Border>
+            </Grid>
             <Button Content="Apply new IP — Disabled in preview" IsEnabled="False"
                     Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left"/>
-        </StackPanel>
-    </ScrollViewer>
+            </StackPanel>
+        </Border>
+    </controls:SmoothScrollViewer>
 </UserControl>

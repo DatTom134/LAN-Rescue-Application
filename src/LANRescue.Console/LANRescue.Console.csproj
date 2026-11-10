@@ -5,6 +5,7 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>LANRescue.ConsoleApp</RootNamespace>
     <AssemblyName>LANRescue.Console</AssemblyName>
+    <Version>0.4.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LANRescue.Domain\LANRescue.Domain.csproj" />

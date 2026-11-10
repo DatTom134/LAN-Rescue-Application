@@ -9,6 +9,7 @@ using LANRescue.Application.Interfaces;
 using LANRescue.ConsoleApp.Models;
 using LANRescue.Domain.Entities;
 using LANRescue.Domain.Enums;
+using LANRescue.ConsoleApp.Services;
 
 namespace LANRescue.ConsoleApp.Views;
 
@@ -285,6 +286,9 @@ public partial class DiagnosticsView : UserControl
         object sender,
         SelectionChangedEventArgs e)
     {
+        if (_isUpdatingAdapters)
+            return;
+
         ClearConnectivityResults();
 
         if (AdapterComboBox.SelectedItem is not NetworkAdapterDisplayItem adapter)
@@ -498,6 +502,8 @@ public partial class DiagnosticsView : UserControl
 
         LoadingText.Visibility =
             Visibility.Visible;
+        AdapterLoadingProgressBar.Visibility = MotionSettings.Current.ReducedMotion
+            ? Visibility.Collapsed : Visibility.Visible;
 
         EmptyState.Visibility =
             Visibility.Collapsed;
@@ -580,6 +586,10 @@ public partial class DiagnosticsView : UserControl
 
             // Chọn sau khi hoàn thành cập nhật collection.
             AdapterComboBox.SelectedItem = adapterToSelect;
+            AdapterListBox.SelectedItem = adapterToSelect;
+            AdapterInspectorContent.Content = adapterToSelect;
+            AdapterInspectorPlaceholder.Visibility = adapterToSelect is null
+                ? Visibility.Visible : Visibility.Collapsed;
 
             UpdateAdapterSummary();
 
@@ -640,6 +650,7 @@ public partial class DiagnosticsView : UserControl
         {
             LoadingText.Visibility =
                 Visibility.Collapsed;
+            AdapterLoadingProgressBar.Visibility = Visibility.Collapsed;
 
             SetBusyState(false);
 
@@ -825,6 +836,8 @@ public partial class DiagnosticsView : UserControl
 
         ConnectivityStatusText.Text =
             "Running connectivity tests...";
+        ConnectivityProgressBar.Visibility = MotionSettings.Current.ReducedMotion
+            ? Visibility.Collapsed : Visibility.Visible;
 
         ConnectivityInfoText.Text =
             $"{testedAdapterName} · {testedSourceAddress}";
@@ -835,7 +848,7 @@ public partial class DiagnosticsView : UserControl
         // 7. Khóa các control trong khi kiểm tra.
         SetBusyState(true);
 
-        RunTestsButton.Content = "Running...";
+        RunTestsButtonText.Text = "Running...";
 
         try
         {
@@ -891,8 +904,9 @@ public partial class DiagnosticsView : UserControl
         finally
         {
             SetBusyState(false);
+            ConnectivityProgressBar.Visibility = Visibility.Collapsed;
 
-            RunTestsButton.Content = "▶  Run Tests";
+            RunTestsButtonText.Text = "Run Tests";
 
             UpdateDiagnosticSummary();
         }

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using LANRescue.ConsoleApp.Services;
 using LANRescue.Application.Services;
 using LANRescue.ConsoleApp.Models;
 using LANRescue.ConsoleApp.Views.Dialogs;
@@ -18,6 +19,8 @@ public partial class DevicesView : UserControl
     private readonly DeviceCatalogService _catalog;
     private IReadOnlyList<ManagedDevice> _devices = Array.Empty<ManagedDevice>();
     private bool _isInitialized;
+    private bool _isCompactLayout;
+    private bool _catalogAvailable;
 
     public ObservableCollection<DeviceRecord> Devices { get; } = [];
 
@@ -40,6 +43,10 @@ public partial class DevicesView : UserControl
             return;
 
         _isInitialized = true;
+        CatalogLoadingState.Visibility = Visibility.Visible;
+        CatalogLoadingProgressBar.Visibility = MotionSettings.Current.ReducedMotion
+            ? Visibility.Collapsed : Visibility.Visible;
+        CatalogErrorState.Visibility = Visibility.Collapsed;
         try
         {
             await _catalog.InitializeAsync();
@@ -50,14 +57,19 @@ public partial class DevicesView : UserControl
                     await _catalog.SaveAsync(sample.Source);
             }
 
+            _catalogAvailable = true;
             await ReloadDevicesAsync();
         }
         catch (Exception ex)
         {
-            MessageBox.Show(Window.GetWindow(this),
-                $"The device catalog could not be opened.\n\n{ex.Message}",
-                "LAN Rescue database error", MessageBoxButton.OK, MessageBoxImage.Error);
+            _catalogAvailable = false;
             RecordCountText.Text = "Database unavailable";
+            CatalogErrorMessage.Text = ex.Message;
+            CatalogErrorState.Visibility = Visibility.Visible;
+        }
+        finally
+        {
+            CatalogLoadingState.Visibility = Visibility.Collapsed;
         }
     }
 
@@ -69,9 +81,10 @@ public partial class DevicesView : UserControl
 
     private void ApplyFilter(Guid? selectDeviceId = null)
     {
-        if (DevicesGrid is null)
+        if (DevicesGrid is null || !_catalogAvailable)
             return;
 
+        CatalogErrorState.Visibility = Visibility.Collapsed;
         IEnumerable<ManagedDevice> query = _devices;
         query = FilterComboBox.SelectedIndex switch
         {
@@ -99,6 +112,7 @@ public partial class DevicesView : UserControl
 
         var records = query.Select(device => new DeviceRecord(device)).ToList();
         DevicesGrid.ItemsSource = new ObservableCollection<DeviceRecord>(records);
+        CatalogEmptyState.Visibility = records.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         RecordCountText.Text = $"{records.Count} shown · {_devices.Count} total · {_devices.Count(device => device.IsManaged)} managed";
 
         var target = selectDeviceId.HasValue
@@ -113,6 +127,58 @@ public partial class DevicesView : UserControl
     private static bool Contains(string? source, string query) =>
         source?.Contains(query, StringComparison.OrdinalIgnoreCase) == true;
 
+    private void DevicesLayoutGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        var compact = e.NewSize.Width < 1040;
+        if (compact == _isCompactLayout) return;
+        _isCompactLayout = compact;
+        if (compact)
+        {
+            DevicesLayoutGrid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+            DevicesLayoutGrid.ColumnDefinitions[1].Width = new GridLength(0, GridUnitType.Pixel);
+            DevicesLayoutGrid.ColumnDefinitions[2].Width = new GridLength(0, GridUnitType.Pixel);
+            DevicesLayoutGrid.RowDefinitions[0].Height = GridLength.Auto;
+            DevicesLayoutGrid.RowDefinitions[1].Height = GridLength.Auto;
+            Grid.SetRow(DetailsPanel, 1);
+            Grid.SetColumn(DetailsPanel, 0);
+            Grid.SetColumnSpan(DetailsPanel, 3);
+            DevicesTableCard.Margin = new Thickness(0, 0, 0, 12);
+            DetailsPanel.Margin = new Thickness(0);
+            SearchBox.Width = 180;
+            DevicesGrid.Columns[2].Visibility = Visibility.Collapsed;
+            DevicesGrid.Columns[4].Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            DevicesLayoutGrid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+            DevicesLayoutGrid.ColumnDefinitions[1].Width = new GridLength(14, GridUnitType.Pixel);
+            DevicesLayoutGrid.ColumnDefinitions[2].Width = new GridLength(300, GridUnitType.Pixel);
+            DevicesLayoutGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+            DevicesLayoutGrid.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
+            Grid.SetRow(DetailsPanel, 0);
+            Grid.SetColumn(DetailsPanel, 2);
+            Grid.SetColumnSpan(DetailsPanel, 1);
+            DevicesTableCard.Margin = new Thickness(0);
+            DetailsPanel.Margin = new Thickness(0);
+            SearchBox.Width = 220;
+            DevicesGrid.Columns[2].Visibility = Visibility.Visible;
+            DevicesGrid.Columns[4].Visibility = Visibility.Visible;
+        }
+    }
+
+    private void RetryCatalog_Click(object sender, RoutedEventArgs e)
+    {
+        _isInitialized = false;
+        DevicesView_Loaded(this, new RoutedEventArgs());
+    }
+
+    private void ClearDeviceFilters_Click(object sender, RoutedEventArgs e)
+    {
+        SearchBox.Clear();
+        FilterComboBox.SelectedIndex = 0;
+        ApplyFilter();
+    }
+
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e) => ApplyFilter();
 
     private void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -124,6 +190,14 @@ public partial class DevicesView : UserControl
     private void DevicesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         DetailsPanel.DataContext = DevicesGrid.SelectedItem as DeviceRecord;
+        if (MotionSettings.Current.ReducedMotion)
+        {
+            DetailsPanel.BeginAnimation(UIElement.OpacityProperty, null);
+            DetailsPanel.RenderTransform = Transform.Identity;
+            DetailsPanel.Opacity = 1;
+            UpdateActionButtons();
+            return;
+        }
         DetailsPanel.Opacity = 0.72;
         var slide = new TranslateTransform(7, 0);
         DetailsPanel.RenderTransform = slide;

@@ -1,15 +1,17 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:LANRescue.ConsoleApp.Controls">
+    <controls:SmoothScrollViewer Style="{StaticResource PageScrollViewerStyle}">
+        <Border Style="{StaticResource PageContentContainerStyle}">
+            <StackPanel>
             <StackPanel Margin="0,0,0,20">
                 <TextBlock Text="Network overview" Style="{StaticResource PageTitleTextStyle}"/>
                 <TextBlock Text="A sample snapshot of managed endpoints and network health."
                            Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
             </StackPanel>
 
-            <UniformGrid Columns="4" Margin="-6,0,-6,18">
+            <UniformGrid x:Name="DashboardKpiGrid" Columns="4" Margin="-6,0,-6,18" SizeChanged="DashboardKpiGrid_SizeChanged">
                 <Border Style="{StaticResource CardBorderStyle}" Margin="6,0" MinHeight="128">
                     <StackPanel>
                         <TextBlock Text="Managed devices" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
@@ -40,13 +42,13 @@
                 </Border>
             </UniformGrid>
 
-            <Grid>
+            <Grid x:Name="DashboardDetailsGrid" SizeChanged="DashboardDetailsGrid_SizeChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.2*"/>
                     <ColumnDefinition Width="16"/>
                     <ColumnDefinition Width="0.8*"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Style="{StaticResource GlassCardBorderStyle}">
+                <Border x:Name="PriorityScenarioCard" Grid.Column="0" Style="{StaticResource GlassCardBorderStyle}">
                     <StackPanel>
                         <TextBlock Text="Priority scenario" Style="{StaticResource SectionTitleTextStyle}"/>
                         <TextBlock Text="PC-B and PC-C are shown with the same IPv4 address. The records are illustrative only."
@@ -73,7 +75,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}">
+                <Border x:Name="RecentEventsCard" Grid.Column="2" Style="{StaticResource CardBorderStyle}">
                     <StackPanel>
                         <TextBlock Text="Recent events" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,10"/>
                         <TextBlock Text="19:02  ·  Sample IP conflict detected for 192.168.110.93"
@@ -91,6 +93,7 @@
                     </StackPanel>
                 </Border>
             </Grid>
-        </StackPanel>
-    </ScrollViewer>
+            </StackPanel>
+        </Border>
+    </controls:SmoothScrollViewer>
 </UserControl>

@@ -38,6 +38,9 @@ public static class WindowBackdrop
             if (!OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22621))
                 return;
 
+            // Enable transparent WPF rendering only on supported Windows 11 builds.
+            window.Background = Brushes.Transparent;
+
             // WPF normally paints an opaque composition target. Make the target transparent
             // and extend the DWM frame through the client area so the requested material can show.
             var source = HwndSource.FromHwnd(handle);

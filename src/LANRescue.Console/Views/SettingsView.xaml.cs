@@ -11,6 +11,7 @@ public partial class SettingsView : UserControl
     public SettingsView()
     {
         InitializeComponent();
+        VersionText.Text = $"{AppVersion.Display} · Fluent Glass UI";
         Loaded += SettingsView_Loaded;
         Unloaded += SettingsView_Unloaded;
     }
@@ -21,11 +22,26 @@ public partial class SettingsView : UserControl
         _isInitializingThemeSelector = true;
         ThemeSelector.SelectedIndex = ThemeManager.CurrentTheme == AppTheme.Dark ? 1 : 0;
         _isInitializingThemeSelector = false;
+        ReducedMotionCheckBox.IsChecked = MotionSettings.Current.ReducedMotion;
+        MotionSettings.Current.PropertyChanged += MotionSettings_PropertyChanged;
     }
 
     private void SettingsView_Unloaded(object sender, RoutedEventArgs e)
     {
         ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
+        MotionSettings.Current.PropertyChanged -= MotionSettings_PropertyChanged;
+    }
+
+    private void ReducedMotionCheckBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (IsLoaded && ReducedMotionCheckBox.IsChecked.HasValue)
+            MotionSettings.Current.ReducedMotion = ReducedMotionCheckBox.IsChecked.Value;
+    }
+
+    private void MotionSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MotionSettings.ReducedMotion))
+            ReducedMotionCheckBox.IsChecked = MotionSettings.Current.ReducedMotion;
     }
 
     private void ThemeSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)

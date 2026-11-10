@@ -89,8 +89,7 @@ public partial class DeviceEditorWindow : Window
         var name = DeviceNameBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
         {
-            MessageBox.Show(this, "Device code and device name are required.", "Check device information",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            ShowValidation("Device code and device name are required.");
             return;
         }
 
@@ -233,4 +232,10 @@ public partial class DeviceEditorWindow : Window
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private void ShowValidation(string message)
+    {
+        ValidationMessageText.Text = message;
+        ValidationMessageText.Visibility = Visibility.Visible;
+    }
 }
