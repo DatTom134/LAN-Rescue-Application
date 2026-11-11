@@ -6,8 +6,8 @@
         <Border Style="{StaticResource PageContentContainerStyle}">
             <StackPanel>
             <StackPanel Margin="0,0,0,20">
-                <TextBlock Text="IP recovery" Style="{StaticResource PageTitleTextStyle}"/>
-                <TextBlock Text="Design preview for a controlled remote IP change workflow."
+                <TextBlock Text="{DynamicResource IpRecovery_Title}" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="{DynamicResource IpRecovery_Description}"
                            Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
             </StackPanel>
 
@@ -15,8 +15,8 @@
                     BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
                     CornerRadius="12" Padding="16" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="Demo mode — actions are disabled" Foreground="{DynamicResource WarningTextBrush}" FontWeight="Bold"/>
-                    <TextBlock Text="This screen will not change any real network configuration. A future version must authenticate the target Agent and verify the new IP allocation first."
+                    <TextBlock Text="{DynamicResource IpRecovery_DemoTitle}" Foreground="{DynamicResource WarningTextBrush}" FontWeight="Bold"/>
+                    <TextBlock Text="{DynamicResource IpRecovery_Safety}"
                                Foreground="{DynamicResource WarningTextBrush}" Margin="0,5,0,0" TextWrapping="Wrap" FontSize="11"/>
                 </StackPanel>
             </Border>
@@ -33,7 +33,7 @@
                 </Grid.RowDefinitions>
             <Border x:Name="RecoveryTargetCard" Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="1. Target device" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,12"/>
+                    <TextBlock Text="{DynamicResource IpRecovery_TargetDevice}" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,12"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170"/>
@@ -42,24 +42,24 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="36"/><RowDefinition Height="36"/><RowDefinition Height="36"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Device" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
+                        <TextBlock Text="{DynamicResource IpRecovery_Device}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
                         <TextBlock Grid.Column="1" Text="QA-PC-02 · QA-PC-002" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Row="1" Text="Current IPv4" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
+                        <TextBlock Grid.Row="1" Text="{DynamicResource IpRecovery_CurrentIPv4}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="192.168.110.93" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Row="2" Text="Management channel" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Not connected — sample only" VerticalAlignment="Center" Foreground="{DynamicResource WarningBrush}"/>
+                        <TextBlock Grid.Row="2" Text="{DynamicResource IpRecovery_ManagementChannel}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{DynamicResource IpRecovery_NotConnectedSample}" VerticalAlignment="Center" Foreground="{DynamicResource WarningBrush}"/>
                     </Grid>
                 </StackPanel>
             </Border>
 
             <Border x:Name="RecoveryConfigCard" Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="2. New network configuration" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,14"/>
-                    <TextBlock Text="Address mode" Margin="0,0,0,5" FontSize="11"/>
+                    <TextBlock Text="{DynamicResource IpRecovery_NewConfiguration}" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,14"/>
+                    <TextBlock Text="{DynamicResource IpRecovery_AddressMode}" Margin="0,0,0,5" FontSize="11"/>
                     <ComboBox x:Name="AddressModeBox" SelectedIndex="0" Width="240" HorizontalAlignment="Left"
                               IsEnabled="False" Margin="0,0,0,14">
-                        <ComboBoxItem Content="Static IPv4 (sample)"/>
-                        <ComboBoxItem Content="DHCP (future)"/>
+                        <ComboBoxItem Content="{DynamicResource IpRecovery_StaticSample}"/>
+                        <ComboBoxItem Content="{DynamicResource IpRecovery_DhcpFuture}"/>
                     </ComboBox>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -69,28 +69,28 @@
                             <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,12">
-                            <TextBlock Text="IPv4 address" Margin="0,0,0,5" FontSize="11"/>
+                            <TextBlock Text="{DynamicResource IpRecovery_Ipv4Address}" Margin="0,0,0,5" FontSize="11"/>
                             <TextBox Text="192.168.110.152" IsEnabled="False"/>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
-                            <TextBlock Text="Subnet mask" Margin="0,0,0,5" FontSize="11"/>
+                            <TextBlock Text="{DynamicResource IpRecovery_SubnetMask}" Margin="0,0,0,5" FontSize="11"/>
                             <TextBox Text="255.255.255.0" IsEnabled="False"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Default gateway" Margin="0,0,0,5" FontSize="11"/>
+                            <TextBlock Text="{DynamicResource IpRecovery_DefaultGateway}" Margin="0,0,0,5" FontSize="11"/>
                             <TextBox Text="192.168.110.9" IsEnabled="False"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="2">
-                            <TextBlock Text="DNS server" Margin="0,0,0,5" FontSize="11"/>
-                            <TextBox Text="Company DNS (not specified)" IsEnabled="False"/>
+                            <TextBlock Text="{DynamicResource IpRecovery_DnsServer}" Margin="0,0,0,5" FontSize="11"/>
+                            <TextBox Text="{DynamicResource IpRecovery_CompanyDns}" IsEnabled="False"/>
                         </StackPanel>
                     </Grid>
-                    <TextBlock Text="192.168.110.152 is an example only. Do not assign it without approval and an IPAM/DHCP check."
+                    <TextBlock Text="{DynamicResource IpRecovery_AddressWarning}"
                                Foreground="{DynamicResource WarningBrush}" Margin="0,14,0,0" TextWrapping="Wrap" FontSize="11"/>
                 </StackPanel>
             </Border>
             </Grid>
-            <Button Content="Apply new IP — Disabled in preview" IsEnabled="False"
+            <Button Content="{DynamicResource IpRecovery_ApplyDisabled}" IsEnabled="False"
                     Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>

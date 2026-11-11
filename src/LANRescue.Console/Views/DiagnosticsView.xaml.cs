@@ -31,6 +31,15 @@ public partial class DiagnosticsView : UserControl
 
     private bool _hasSuccessfulAdapterLoad;
 
+    private string _statusResourceKey = "Diagnostics_WaitingAdapters";
+    private object[] _statusArguments = Array.Empty<object>();
+    private string _lastUpdatedResourceKey = "Diagnostics_NotRefreshed";
+    private DateTime? _lastUpdatedAt;
+    private string? _connectivityStatusResourceKey;
+    private object[] _connectivityStatusArguments = Array.Empty<object>();
+    private string? _connectivityTooltipResourceKey;
+    private string? _connectivityErrorResourceKey;
+
     public ObservableCollection<NetworkAdapterDisplayItem> Adapters { get; } = [];
 
     public ObservableCollection<DiagnosticEvidence> EvidenceResults { get; } = [];
@@ -69,18 +78,123 @@ public partial class DiagnosticsView : UserControl
         DataContext = this;
 
         Loaded += DiagnosticsView_Loaded;
+        Unloaded += DiagnosticsView_Unloaded;
+    }
+
+    private void DiagnosticsView_Unloaded(object sender, RoutedEventArgs e)
+    {
+        LocalizationManager.LanguageChanged -= LocalizationManager_LanguageChanged;
     }
 
     private async void DiagnosticsView_Loaded(
         object sender,
         RoutedEventArgs e)
     {
+        LocalizationManager.LanguageChanged -= LocalizationManager_LanguageChanged;
+        LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
+
+        LocalizationManager_LanguageChanged(this, EventArgs.Empty);
+
         if (_hasLoaded)
             return;
 
         _hasLoaded = true;
 
         await LoadAdaptersAsync();
+    }
+
+    private void LocalizationManager_LanguageChanged(object? sender, EventArgs e)
+    {
+        foreach (var adapter in Adapters)
+            adapter.RefreshLocalization();
+
+        AdapterListView.Refresh();
+
+        // Enum and result converters are binding-driven. Re-publish the
+        // existing evidence so their display values are evaluated again
+        // against the newly loaded language dictionary.
+        if (EvidenceResults.Count > 0)
+        {
+            var evidenceSnapshot = EvidenceResults.ToArray();
+            EvidenceResults.Clear();
+            foreach (var evidence in evidenceSnapshot)
+                EvidenceResults.Add(evidence);
+        }
+
+        if (AdapterComboBox.SelectedItem is NetworkAdapterDisplayItem selectedAdapter)
+        {
+            GatewayValueText.Text = selectedAdapter.FirstIpv4GatewayText;
+            DnsServerValueText.Text = selectedAdapter.FirstIpv4DnsServerText;
+        }
+        else
+        {
+            GatewayValueText.Text = LocalizationManager.GetString("Common_NotConfigured");
+            DnsServerValueText.Text = LocalizationManager.GetString("Common_NotConfigured");
+        }
+
+        UpdateAdapterSummary();
+        UpdateDiagnosticSummary();
+        SetStatus(_statusResourceKey, _statusArguments);
+        UpdateLastUpdatedText();
+
+        if (_connectivityStatusResourceKey is not null)
+            SetConnectivityStatus(_connectivityStatusResourceKey, _connectivityStatusArguments,
+                _connectivityTooltipResourceKey);
+
+        if (_connectivityErrorResourceKey is not null)
+            ConnectivityErrorText.Text = LocalizationManager.GetString(_connectivityErrorResourceKey);
+
+        RunTestsButtonText.SetResourceReference(
+            TextBlock.TextProperty,
+            _isBusy ? "Diagnostics_Running" : "Diagnostics_RunTests");
+    }
+
+    private void SetStatus(string resourceKey, params object[] arguments)
+    {
+        _statusResourceKey = resourceKey;
+        _statusArguments = arguments;
+        StatusText.Text = LocalizationManager.Format(resourceKey, arguments);
+    }
+
+    private void SetLastUpdatedKey(string resourceKey)
+    {
+        _lastUpdatedResourceKey = resourceKey;
+        _lastUpdatedAt = null;
+        UpdateLastUpdatedText();
+    }
+
+    private void SetLastUpdatedTime(DateTime value)
+    {
+        _lastUpdatedAt = value;
+        UpdateLastUpdatedText();
+    }
+
+    private void UpdateLastUpdatedText()
+    {
+        LastUpdatedText.Text = _lastUpdatedAt.HasValue
+            ? LocalizationManager.Format("Diagnostics_LastUpdated", _lastUpdatedAt.Value)
+            : LocalizationManager.GetString(_lastUpdatedResourceKey);
+    }
+
+    private void SetConnectivityStatus(
+        string resourceKey,
+        object[]? arguments = null,
+        string? tooltipResourceKey = null)
+    {
+        _connectivityStatusResourceKey = resourceKey;
+        _connectivityStatusArguments = arguments ?? Array.Empty<object>();
+        _connectivityTooltipResourceKey = tooltipResourceKey;
+        ConnectivityStatusText.Text = LocalizationManager.Format(resourceKey, _connectivityStatusArguments);
+        ConnectivityStatusText.ToolTip = tooltipResourceKey is null
+            ? null
+            : LocalizationManager.GetString(tooltipResourceKey);
+    }
+
+    private void ShowConnectivityError(string resourceKey)
+    {
+        _connectivityErrorResourceKey = resourceKey;
+        ConnectivityErrorText.Text = LocalizationManager.GetString(resourceKey);
+        ConnectivityErrorCard.Visibility = Visibility.Visible;
     }
 
     private async void Refresh_Click(
@@ -302,8 +416,8 @@ public partial class DiagnosticsView : UserControl
             AdapterInspectorPlaceholder.Visibility =
                 Visibility.Visible;
 
-            GatewayValueText.Text = "Not configured";
-            DnsServerValueText.Text = "Not configured";
+            GatewayValueText.Text = LocalizationManager.GetString("Common_NotConfigured");
+            DnsServerValueText.Text = LocalizationManager.GetString("Common_NotConfigured");
 
             RunTestsButton.IsEnabled = false;
 
@@ -378,22 +492,22 @@ public partial class DiagnosticsView : UserControl
             return string.Empty;
 
         if (hasHost != hasPort)
-            return "TCP · Incomplete";
+            return LocalizationManager.GetString("Diagnostics_TcpIncomplete");
 
         if (!IPAddress.TryParse(host, out var ip) ||
             ip.AddressFamily !=
                 System.Net.Sockets.AddressFamily.InterNetwork)
         {
-            return "TCP · Invalid IPv4";
+            return LocalizationManager.GetString("Diagnostics_TcpInvalidIpv4");
         }
 
         if (!int.TryParse(portText, out int port) ||
             port is < 1 or > 65535)
         {
-            return "TCP · Invalid port";
+            return LocalizationManager.GetString("Diagnostics_TcpInvalidPort");
         }
 
-        return $"TCP · Ready ({ip}:{port})";
+        return LocalizationManager.Format("Diagnostics_TcpReady", ip, port);
     }
 
     private string GetDnsConfigurationStatus(
@@ -404,8 +518,8 @@ public partial class DiagnosticsView : UserControl
         if (string.IsNullOrWhiteSpace(hostname))
             return string.Empty;
 
-        if (adapter.FirstIpv4DnsServerText == "Not configured")
-            return "DNS · No IPv4 server";
+        if (!adapter.HasIpv4DnsServer)
+            return LocalizationManager.GetString("Diagnostics_DnsServerNone");
 
         try
         {
@@ -414,7 +528,7 @@ public partial class DiagnosticsView : UserControl
                     .GetAscii(hostname);
 
             if (asciiHost.Length > 253)
-                return "DNS · Invalid hostname";
+                return LocalizationManager.GetString("Diagnostics_DnsInvalidHostname");
 
             string[] labels = asciiHost.Split('.');
 
@@ -427,13 +541,13 @@ public partial class DiagnosticsView : UserControl
                     character != '-'));
 
             if (invalid)
-                return "DNS · Invalid hostname";
+                return LocalizationManager.GetString("Diagnostics_DnsInvalidHostname");
 
-            return $"DNS · Ready ({hostname})";
+            return LocalizationManager.Format("Diagnostics_DnsReady", hostname);
         }
         catch (ArgumentException)
         {
-            return "DNS · Invalid hostname";
+            return LocalizationManager.GetString("Diagnostics_DnsInvalidHostname");
         }
     }
 
@@ -444,17 +558,17 @@ public partial class DiagnosticsView : UserControl
 
         // Adapter hiện được chọn.
         SummaryAdapterText.Text =
-            adapter?.Name ?? "Not selected";
+            adapter?.Name ?? LocalizationManager.GetString("Diagnostics_NotSelected");
 
         // Source IPv4 hiện được chọn.
         SummarySourceText.Text =
-            SourceIpv4ComboBox.SelectedItem as string ?? "Not selected";
+            SourceIpv4ComboBox.SelectedItem as string ?? LocalizationManager.GetString("Diagnostics_NotSelected");
 
         // Chưa chọn adapter thì chưa có kế hoạch kiểm tra.
         if (adapter is null)
         {
             SummaryChecksText.Text =
-                "Select a network adapter to see planned checks.";
+                LocalizationManager.GetString("Diagnostics_SelectAdapterForChecks");
 
             return;
         }
@@ -467,8 +581,8 @@ public partial class DiagnosticsView : UserControl
 
         plannedChecks.Add(
             canPingGateway
-                ? $"Gateway Ping · {adapter.FirstIpv4GatewayText}"
-                : "Gateway Ping · Unavailable");
+                ? LocalizationManager.Format("Diagnostics_GatewayPing", adapter.FirstIpv4GatewayText)
+                : LocalizationManager.GetString("Diagnostics_GatewayUnavailable"));
 
         string tcpStatus =
             GetTcpConfigurationStatus();
@@ -511,15 +625,13 @@ public partial class DiagnosticsView : UserControl
         ErrorCard.Visibility =
             Visibility.Collapsed;
 
-        StatusText.Text =
-            _hasSuccessfulAdapterLoad
-                ? "Refreshing network adapter information..."
-                : "Reading network adapters from Windows...";
+        SetStatus(_hasSuccessfulAdapterLoad
+            ? "Diagnostics_LoadingAdapters"
+            : "Diagnostics_ReadingAdapters");
 
-        LastUpdatedText.Text =
-            _hasSuccessfulAdapterLoad
-                ? "Refreshing..."
-                : "Not refreshed";
+        SetLastUpdatedKey(_hasSuccessfulAdapterLoad
+            ? "Diagnostics_Refreshing"
+            : "Diagnostics_NotRefreshed");
 
         // Không ẩn AdapterItemsControl và không xóa Adapters ở đây.
         // Snapshot cũ vẫn được giữ trong lúc đọc dữ liệu mới.
@@ -593,8 +705,7 @@ public partial class DiagnosticsView : UserControl
 
             UpdateAdapterSummary();
 
-            LastUpdatedText.Text =
-                $"Last updated: {DateTime.Now:HH:mm:ss}";
+            SetLastUpdatedTime(DateTime.Now);
 
             AdapterListBox.Visibility =
                 Adapters.Count > 0
@@ -610,8 +721,8 @@ public partial class DiagnosticsView : UserControl
         }
         catch (Exception ex)
         {
-            ErrorText.Text =
-                $"{ex.GetType().Name}: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"[Diagnostics] Adapter discovery failed: {ex}");
+            ErrorText.Text = LocalizationManager.GetString("Diagnostics_ErrorDetail");
 
             ErrorCard.Visibility =
                 Visibility.Visible;
@@ -624,11 +735,9 @@ public partial class DiagnosticsView : UserControl
                         ? Visibility.Visible
                         : Visibility.Collapsed;
 
-                StatusText.Text =
-                    $"{Adapters.Count} interfaces · Showing previous snapshot";
+                SetStatus("Diagnostics_PreviousSnapshot", Adapters.Count);
 
-                LastUpdatedText.Text =
-                    "Last successful refresh";
+                SetLastUpdatedKey("Diagnostics_LastSuccessfulRefresh");
 
                 EmptyState.Visibility =
                     Visibility.Collapsed;
@@ -639,11 +748,9 @@ public partial class DiagnosticsView : UserControl
                 AdapterListBox.Visibility =
                     Visibility.Collapsed;
 
-                StatusText.Text =
-                    "Unable to read network adapters.";
+                SetStatus("Diagnostics_UnableReadAdaptersShort");
 
-                LastUpdatedText.Text =
-                    "Not available";
+                SetLastUpdatedKey("Diagnostics_NotAvailable");
             }
         }
         finally
@@ -714,11 +821,9 @@ public partial class DiagnosticsView : UserControl
         UpAdapterCountText.Text =
             upCount.ToString();
 
-        StatusText.Text =
-            $"{Adapters.Count} network interfaces detected by Windows.";
+        SetStatus("Diagnostics_NetworkInterfacesDetected", Adapters.Count);
 
-        AdapterListCountText.Text =
-            $"{Adapters.Count} interfaces";
+        AdapterListCountText.Text = LocalizationManager.Format("Diagnostics_InterfaceCount", Adapters.Count);
     }
 
     private async void RunConnectivityTests_Click(
@@ -732,8 +837,7 @@ public partial class DiagnosticsView : UserControl
         if (AdapterComboBox.SelectedItem
             is not NetworkAdapterDisplayItem adapter)
         {
-            ShowConnectivityError(
-                "Please select a network adapter.");
+            ShowConnectivityError("Diagnostics_SelectAdapterError");
 
             return;
         }
@@ -742,8 +846,7 @@ public partial class DiagnosticsView : UserControl
         if (SourceIpv4ComboBox.SelectedItem
             is not string sourceAddress)
         {
-            ShowConnectivityError(
-                "The selected adapter does not have a valid Source IPv4 address.");
+            ShowConnectivityError("Diagnostics_InvalidSourceIPv4");
 
             return;
         }
@@ -763,8 +866,7 @@ public partial class DiagnosticsView : UserControl
 
         if (hasTcpHost != hasTcpPort)
         {
-            ShowConnectivityError(
-                "Please provide both TCP Target IPv4 and Port, or leave both empty.");
+            ShowConnectivityError("Diagnostics_TcpBothFields");
 
             return;
         }
@@ -780,8 +882,7 @@ public partial class DiagnosticsView : UserControl
                 targetIp.AddressFamily !=
                     System.Net.Sockets.AddressFamily.InterNetwork)
             {
-                ShowConnectivityError(
-                    "TCP Target must be a valid IPv4 address.");
+                ShowConnectivityError("Diagnostics_TcpTargetInvalid");
 
                 return;
             }
@@ -791,8 +892,7 @@ public partial class DiagnosticsView : UserControl
                     out int parsedPort) ||
                 parsedPort is < 1 or > 65535)
             {
-                ShowConnectivityError(
-                    "TCP Port must be a number between 1 and 65535.");
+                ShowConnectivityError("Diagnostics_TcpPortInvalid");
 
                 return;
             }
@@ -808,10 +908,9 @@ public partial class DiagnosticsView : UserControl
                 : DnsHostTextBox.Text.Trim();
 
         if (dnsHost is not null &&
-            adapter.FirstIpv4DnsServerText == "Not configured")
+            !adapter.HasIpv4DnsServer)
         {
-            ShowConnectivityError(
-                "The selected adapter does not have an IPv4 DNS server.");
+            ShowConnectivityError("Diagnostics_NoDnsServer");
 
             return;
         }
@@ -834,8 +933,7 @@ public partial class DiagnosticsView : UserControl
         ResultsCard.Visibility =
             Visibility.Visible;
 
-        ConnectivityStatusText.Text =
-            "Running connectivity tests...";
+        SetConnectivityStatus("Diagnostics_RunningTests");
         ConnectivityProgressBar.Visibility = MotionSettings.Current.ReducedMotion
             ? Visibility.Collapsed : Visibility.Visible;
 
@@ -843,12 +941,12 @@ public partial class DiagnosticsView : UserControl
             $"{testedAdapterName} · {testedSourceAddress}";
 
         ConnectivityInfoText.ToolTip =
-            "Configuration captured for this diagnostic session.";
+            LocalizationManager.GetString("Diagnostics_ConfigCaptured");
 
         // 7. Khóa các control trong khi kiểm tra.
         SetBusyState(true);
 
-        RunTestsButtonText.Text = "Running...";
+        RunTestsButtonText.SetResourceReference(TextBlock.TextProperty, "Diagnostics_Running");
 
         try
         {
@@ -872,10 +970,18 @@ public partial class DiagnosticsView : UserControl
                 session.Evidence.Count(
                     item => item.IsSuccessful);
 
-            ConnectivityStatusText.Text =
-                session.OverallStatus == DiagnosticStatus.Online
-                    ? $"Online · {successfulTests}/{session.Evidence.Count} tests succeeded"
-                    : "Unknown · No successful connectivity evidence";
+            if (session.OverallStatus == DiagnosticStatus.Online)
+            {
+                SetConnectivityStatus(
+                    "Diagnostics_OnlineSummary",
+                    new object[] { successfulTests, session.Evidence.Count });
+            }
+            else
+            {
+                SetConnectivityStatus(
+                    "Diagnostics_UnknownSummary",
+                    tooltipResourceKey: "Diagnostics_NoSuccessfulResponse");
+            }
 
             ConnectivityInfoText.Text =
                 $"{testedAdapterName} · " +
@@ -885,8 +991,8 @@ public partial class DiagnosticsView : UserControl
             if (session.OverallStatus == DiagnosticStatus.Unknown)
             {
                 ConnectivityStatusText.ToolTip =
-                    "No successful response was received. " +
-                    "This does not prove that the target is offline.";
+                    LocalizationManager.GetString("Diagnostics_NoSuccessfulResponse");
+                _connectivityTooltipResourceKey = "Diagnostics_NoSuccessfulResponse";
             }
             else
             {
@@ -898,25 +1004,18 @@ public partial class DiagnosticsView : UserControl
             ResultsCard.Visibility =
                 Visibility.Collapsed;
 
-            ShowConnectivityError(
-                $"{ex.GetType().Name}: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[Diagnostics] Connectivity test failed: {ex}");
+            ShowConnectivityError("Diagnostics_ErrorDetail");
         }
         finally
         {
             SetBusyState(false);
             ConnectivityProgressBar.Visibility = Visibility.Collapsed;
 
-            RunTestsButtonText.Text = "Run Tests";
+            RunTestsButtonText.SetResourceReference(TextBlock.TextProperty, "Diagnostics_RunTests");
 
             UpdateDiagnosticSummary();
         }
-    }
-
-    private void ShowConnectivityError(string message)
-    {
-        ConnectivityErrorText.Text = message;
-
-        ConnectivityErrorCard.Visibility = Visibility.Visible;
     }
 
     private void ClearConnectivityResults()
@@ -927,12 +1026,16 @@ public partial class DiagnosticsView : UserControl
         // Ẩn kết quả cũ và lỗi cũ.
         ResultsCard.Visibility = Visibility.Collapsed;
         ConnectivityErrorCard.Visibility = Visibility.Collapsed;
+        _connectivityErrorResourceKey = null;
 
         // Hiển thị lại trạng thái chờ.
         ResultsPlaceholderCard.Visibility = Visibility.Visible;
 
         ConnectivityStatusText.ToolTip = null;
         ConnectivityInfoText.Text = string.Empty;
+        _connectivityStatusResourceKey = null;
+        _connectivityStatusArguments = Array.Empty<object>();
+        _connectivityTooltipResourceKey = null;
 
         UpdateDiagnosticSummary();
     }

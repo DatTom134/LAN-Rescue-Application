@@ -1,49 +1,495 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.IpConflictView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:LANRescue.ConsoleApp.Controls"
-             xmlns:local="clr-namespace:LANRescue.ConsoleApp.Views">
-    <controls:SmoothScrollViewer Style="{StaticResource PageScrollViewerStyle}">
+             Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <UserControl.Resources>
+
+        <!-- IPv4 HEADER + FILTER -->
+        <DataTemplate x:Key="IpAddressHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource IpConflicts_ColumnIPv4}"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBox Tag="IpAddress"
+                         Height="38"
+                         Margin="0,4,0,0"
+                         Padding="7,2"
+                         FontSize="11"
+                         ToolTip="{DynamicResource IpConflicts_FilterIPv4}"
+                         TextChanged="ColumnFilter_TextChanged"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- MAC HEADER + FILTER -->
+        <DataTemplate x:Key="MacHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource IpConflicts_ColumnMac}"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBox Tag="MacAddresses"
+                         Height="38"
+                         Margin="0,4,0,0"
+                         Padding="7,2"
+                         FontSize="11"
+                         ToolTip="{DynamicResource IpConflicts_FilterMac}"
+                         TextChanged="ColumnFilter_TextChanged"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- STATUS HEADER + FILTER -->
+        <DataTemplate x:Key="StatusHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource IpConflicts_ColumnStatus}"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBox Tag="Status"
+                         Height="38"
+                         Margin="0,4,0,0"
+                         Padding="7,2"
+                         FontSize="11"
+                         ToolTip="{DynamicResource IpConflicts_FilterStatus}"
+                         TextChanged="ColumnFilter_TextChanged"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- OBSERVATIONS HEADER + FILTER -->
+        <DataTemplate x:Key="ObservationsHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource IpConflicts_ColumnObservations}"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBox Tag="ObservationCount"
+                         Height="38"
+                         Margin="0,4,0,0"
+                         Padding="7,2"
+                         FontSize="11"
+                         ToolTip="{DynamicResource IpConflicts_FilterObservations}"
+                         TextChanged="ColumnFilter_TextChanged"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- FIRST SEEN HEADER + FILTER -->
+        <DataTemplate x:Key="FirstSeenHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource IpConflicts_ColumnFirstSeen}"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBox Tag="FirstSeen"
+                         Height="38"
+                         Margin="0,4,0,0"
+                         Padding="7,2"
+                         FontSize="11"
+                         ToolTip="{DynamicResource IpConflicts_FilterFirstSeen}"
+                         TextChanged="ColumnFilter_TextChanged"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- LAST SEEN HEADER + FILTER -->
+        <DataTemplate x:Key="LastSeenHeaderTemplate">
+            <StackPanel>
+                <TextBlock Text="{DynamicResource IpConflicts_ColumnLastSeen}"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                <TextBox Tag="LastSeen"
+                         Height="38"
+                         Margin="0,4,0,0"
+                         Padding="7,2"
+                         FontSize="11"
+                         ToolTip="{DynamicResource IpConflicts_FilterLastSeen}"
+                         TextChanged="ColumnFilter_TextChanged"/>
+            </StackPanel>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <controls:SmoothScrollViewer
+        Style="{StaticResource PageScrollViewerStyle}">
+
         <Border Style="{StaticResource PageContentContainerStyle}">
-            <StackPanel>
-        <StackPanel Margin="0,0,0,20">
-            <TextBlock Text="IP conflicts" Style="{StaticResource PageTitleTextStyle}"/>
-            <TextBlock Text="Illustrative conflict records. The ARP cache alone cannot identify the intended target."
-                       Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
-        </StackPanel>
 
-        <Border Background="{DynamicResource WarningSurfaceBrush}"
-                BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
-                CornerRadius="12" Padding="16" Margin="0,0,0,16">
             <StackPanel>
-                <TextBlock Text="Important safety rule" Foreground="{DynamicResource WarningTextBrush}" FontWeight="Bold"/>
-                <TextBlock Text="Do not change an endpoint's IP until its Agent identity is authenticated through a working management channel independent of the conflicting IPv4."
-                           Foreground="{DynamicResource WarningTextBrush}" Margin="0,5,0,0" TextWrapping="Wrap" FontSize="11"/>
+
+                <!-- PAGE HEADER -->
+
+                <StackPanel Margin="0,0,0,20">
+
+                    <TextBlock
+                        Text="{DynamicResource IpConflicts_Title}"
+                        Style="{StaticResource PageTitleTextStyle}"/>
+
+                    <TextBlock
+                        Text="{DynamicResource IpConflicts_Description}"
+                        Style="{StaticResource PageSubtitleTextStyle}"
+                        Margin="0,5,0,0"
+                        TextWrapping="Wrap"/>
+
+                </StackPanel>
+
+                <!-- SAFETY NOTICE -->
+
+                <Border
+                    Background="{DynamicResource WarningSurfaceBrush}"
+                    BorderBrush="{DynamicResource WarningBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16"
+                    Margin="0,0,0,16">
+
+                    <StackPanel>
+
+                        <TextBlock
+                            Text="{DynamicResource IpConflicts_SafetyTitle}"
+                            Foreground="{DynamicResource WarningTextBrush}"
+                            FontWeight="Bold"/>
+
+                        <TextBlock
+                            Text="{DynamicResource IpConflicts_SafetyDescription}"
+                            Foreground="{DynamicResource WarningTextBrush}"
+                            Margin="0,5,0,0"
+                            TextWrapping="Wrap"
+                            FontSize="11"/>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- UNIFIED IP CONFLICT WORKSPACE -->
+
+                <Border
+                    Style="{StaticResource CardBorderStyle}"
+                    Padding="0">
+
+                    <Grid
+                        x:Name="WorkspaceGrid"
+                        SizeChanged="WorkspaceGrid_SizeChanged">
+
+                        <Grid.ColumnDefinitions>
+
+                            <!-- OBSERVED: takes all remaining width -->
+                            <ColumnDefinition
+                                x:Name="ObservedColumn"
+                                Width="*"/>
+
+                            <!-- NETWORK SCOPE: content-sized -->
+                            <ColumnDefinition
+                                x:Name="ScopeColumn"
+                                Width="Auto"/>
+
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+
+                            <RowDefinition
+                                x:Name="WorkspaceRow0"
+                                Height="Auto"/>
+
+                            <RowDefinition
+                                x:Name="WorkspaceRow1"
+                                Height="0"/>
+
+                        </Grid.RowDefinitions>
+
+                        <!-- ===================================== -->
+                        <!-- LEFT: OBSERVED IP / MAC               -->
+                        <!-- ===================================== -->
+
+                        <Border
+                            x:Name="ObservedPanel"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Padding="18"
+                            Background="Transparent">
+
+                            <Grid>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- TITLE -->
+
+                                <StackPanel Grid.Row="0"
+                                            Margin="0,0,0,8">
+
+                                    <TextBlock
+                                        Text="{DynamicResource IpConflicts_Observed}"
+                                        Style="{StaticResource SectionTitleTextStyle}"/>
+
+                                    <TextBlock
+                                        Text="{DynamicResource IpConflicts_ObservedDescription}"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        FontSize="11"
+                                        Margin="0,4,0,0"
+                                        TextWrapping="Wrap"/>
+
+                                </StackPanel>
+
+                                <!-- RESULT SUMMARY -->
+
+                                <DockPanel Grid.Row="1"
+                                           Margin="0,0,0,8"
+                                           LastChildFill="False">
+
+                                    <TextBlock
+                                        x:Name="ResultSummaryText"
+                                        DockPanel.Dock="Left"
+                                        Text="{DynamicResource IpConflicts_NoObservations}"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        FontSize="11"
+                                        VerticalAlignment="Center"/>
+
+                                    <Button
+                                        Content="{DynamicResource Common_ClearFilters}"
+                                        DockPanel.Dock="Right"
+                                        Padding="10,5"
+                                        Click="ClearFilters_Click"/>
+
+                                </DockPanel>
+
+                                <!-- DATA GRID -->
+
+                                <DataGrid
+                                    x:Name="ConflictGrid"
+                                    Grid.Row="2"
+                                    AutoGenerateColumns="False"
+                                    IsReadOnly="True"
+                                    CanUserAddRows="False"
+                                    CanUserDeleteRows="False"
+                                    CanUserReorderColumns="True"
+                                    CanUserSortColumns="True"
+                                    ColumnHeaderHeight="82"
+                                    MaxHeight="520"
+                                    MinHeight="160"
+                                    HeadersVisibility="Column"
+                                    GridLinesVisibility="None"
+                                    Sorting="ConflictGrid_Sorting">
+
+                                    <DataGrid.Columns>
+
+                                        <!-- IP ADDRESS -->
+
+                                        <DataGridTextColumn
+                                            Header="{DynamicResource IpConflicts_ColumnIPv4}"
+                                            HeaderTemplate="{StaticResource IpAddressHeaderTemplate}"
+                                            Binding="{Binding IpAddress}"
+                                            SortMemberPath="IpAddress"
+                                            SortDirection="Ascending"
+                                            ElementStyle="{StaticResource DataGridTextBlockStyle}"
+                                            Width="1.15*"
+                                            MinWidth="130"/>
+
+                                        <!-- MAC ADDRESS -->
+
+                                        <DataGridTextColumn
+                                            Header="{DynamicResource IpConflicts_ColumnMac}"
+                                            HeaderTemplate="{StaticResource MacHeaderTemplate}"
+                                            Binding="{Binding MacAddresses}"
+                                            SortMemberPath="MacAddresses"
+                                            ElementStyle="{StaticResource DataGridTextBlockStyle}"
+                                            Width="1.65*"
+                                            MinWidth="155"/>
+
+                                        <!-- STATUS -->
+
+                                        <DataGridTextColumn
+                                            Header="{DynamicResource IpConflicts_ColumnStatus}"
+                                            HeaderTemplate="{StaticResource StatusHeaderTemplate}"
+                                            Binding="{Binding Status}"
+                                            SortMemberPath="Status"
+                                            ElementStyle="{StaticResource DataGridTextBlockStyle}"
+                                            Width="0.85*"
+                                            MinWidth="105"/>
+
+                                        <!-- OBSERVATIONS -->
+
+                                        <DataGridTextColumn
+                                            Header="{DynamicResource IpConflicts_ColumnObservations}"
+                                            HeaderTemplate="{StaticResource ObservationsHeaderTemplate}"
+                                            Binding="{Binding ObservationCount}"
+                                            SortMemberPath="ObservationCount"
+                                            ElementStyle="{StaticResource DataGridTextBlockStyle}"
+                                            Width="0.8*"
+                                            MinWidth="105"/>
+
+                                        <!-- FIRST SEEN -->
+
+                                        <DataGridTextColumn
+                                            Header="{DynamicResource IpConflicts_ColumnFirstSeen}"
+                                            HeaderTemplate="{StaticResource FirstSeenHeaderTemplate}"
+                                            Binding="{Binding FirstSeen}"
+                                            SortMemberPath="FirstSeenAt"
+                                            ElementStyle="{StaticResource DataGridTextBlockStyle}"
+                                            Width="1.3*"
+                                            MinWidth="155"/>
+
+                                        <!-- LAST SEEN -->
+
+                                        <DataGridTextColumn
+                                            Header="{DynamicResource IpConflicts_ColumnLastSeen}"
+                                            HeaderTemplate="{StaticResource LastSeenHeaderTemplate}"
+                                            Binding="{Binding LastSeen}"
+                                            SortMemberPath="LastSeenAt"
+                                            ElementStyle="{StaticResource DataGridTextBlockStyle}"
+                                            Width="1.3*"
+                                            MinWidth="155"/>
+
+                                    </DataGrid.Columns>
+
+                                </DataGrid>
+
+                            </Grid>
+
+                        </Border>
+
+                        <!-- ===================================== -->
+                        <!-- RIGHT: NETWORK SCOPE                  -->
+                        <!-- ===================================== -->
+
+                        <Border
+                            x:Name="ScopePanel"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            MinWidth="410"
+                            MaxWidth="450"
+                            Padding="18"
+                            Background="{DynamicResource SurfaceGlassBrush}"
+                            BorderBrush="{DynamicResource BorderBrushSoft}"
+                            BorderThickness="1,0,0,0"
+                            HorizontalAlignment="Stretch">
+
+                            <StackPanel>
+
+                                <TextBlock
+                                    Text="{DynamicResource IpConflicts_NetworkScope}"
+                                    Style="{StaticResource SectionTitleTextStyle}"
+                                    Margin="0,0,0,18"/>
+
+                                <!-- ADAPTER -->
+
+                                <TextBlock
+                                    Text="{DynamicResource IpConflicts_NetworkAdapter}"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                    FontSize="11"
+                                    Margin="0,0,0,6"/>
+
+                                <ComboBox
+                                    x:Name="AdapterComboBox"
+                                    DisplayMemberPath="DisplayName"
+                                    MinWidth="340"
+                                    MaxWidth="390"
+                                    MinHeight="38"
+                                    HorizontalAlignment="Stretch"
+                                    SelectionChanged="AdapterComboBox_SelectionChanged"/>
+
+                                <!-- NETWORK INFORMATION -->
+
+                                <TextBlock
+                                    Text="{DynamicResource IpConflicts_SelectedNetwork}"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                    FontSize="11"
+                                    Margin="0,16,0,6"/>
+
+                                <Border
+                                    Background="{DynamicResource SurfaceBrush}"
+                                    BorderBrush="{DynamicResource BorderBrushSoft}"
+                                    BorderThickness="1"
+                                    CornerRadius="9"
+                                    Padding="10">
+
+                                    <TextBlock
+                                        x:Name="ScopeText"
+                                        Text="{DynamicResource IpConflicts_SelectActiveIPv4}"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                        TextWrapping="Wrap"
+                                        FontSize="11"/>
+
+                                </Border>
+
+                                <!-- ACTIONS -->
+
+                                <TextBlock
+                                    Text="{DynamicResource Common_Actions}"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                    FontSize="11"
+                                    Margin="0,18,0,8"/>
+
+                                <WrapPanel>
+
+                                    <Button
+                                        x:Name="RefreshAdaptersButton"
+                                        Content="{DynamicResource IpConflicts_RefreshAdapters}"
+                                        Margin="0,0,8,8"
+                                        Padding="12,8"
+                                        Click="RefreshAdapters_Click"/>
+
+                                    <Button
+                                        x:Name="ScanButton"
+                                        Content="{DynamicResource IpConflicts_ScanSubnet}"
+                                        Margin="0,0,8,8"
+                                        Padding="12,8"
+                                        Click="ScanSubnet_Click"/>
+
+                                    <Button
+                                        x:Name="LoadRecentButton"
+                                        Content="{DynamicResource IpConflicts_LoadRecent}"
+                                        Margin="0,0,8,8"
+                                        Padding="12,8"
+                                        Click="LoadRecent_Click"/>
+
+                                </WrapPanel>
+
+                                <!-- STATUS -->
+
+                                <TextBlock
+                                    Text="{DynamicResource Common_OperationStatus}"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                    FontSize="11"
+                                    Margin="0,10,0,6"/>
+
+                                <Border
+                                    Background="{DynamicResource SurfaceBrush}"
+                                    BorderBrush="{DynamicResource BorderBrushSoft}"
+                                    BorderThickness="1"
+                                    CornerRadius="9"
+                                    Padding="10">
+
+                                    <TextBlock
+                                        x:Name="StatusText"
+                                        Text="{DynamicResource IpConflicts_WaitingAdapter}"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        FontSize="11"
+                                        TextWrapping="Wrap"/>
+
+                                </Border>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+
             </StackPanel>
+
         </Border>
 
-        <Border Style="{StaticResource CardBorderStyle}">
-            <StackPanel>
-                <TextBlock Text="Conflict group: 192.168.110.93" Style="{StaticResource SectionTitleTextStyle}"/>
-                <TextBlock Text="Gateway: 192.168.110.9  |  Subnet: 255.255.255.0"
-                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,5,0,12" FontSize="11"/>
-                <DataGrid MinHeight="150" MaxHeight="260" AutoGenerateColumns="False" CanUserAddRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Device" Binding="{Binding DeviceName}" Width="*"/>
-                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Sample MAC" Binding="{Binding MacAddress}" Width="1.5*"/>
-                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Target identity" Binding="{Binding Identity}" Width="1.3*"/>
-                        <DataGridTextColumn ElementStyle="{StaticResource DataGridTextBlockStyle}" Header="Evidence" Binding="{Binding Evidence}" Width="1.2*"/>
-                    </DataGrid.Columns>
-                    <DataGrid.Items>
-                        <local:ConflictRow DeviceName="QA-PC-02 (B)" MacAddress="BB-BB-BB-BB-BB-BB"
-                                           Identity="Not verified" Evidence="Sample record"/>
-                        <local:ConflictRow DeviceName="QA-PC-03 (C)" MacAddress="CC-CC-CC-CC-CC-CC"
-                                           Identity="Not verified" Evidence="Sample record"/>
-                    </DataGrid.Items>
-                </DataGrid>
-            </StackPanel>
-        </Border>
-            </StackPanel>
-        </Border>
     </controls:SmoothScrollViewer>
+
 </UserControl>

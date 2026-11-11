@@ -4,18 +4,22 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.IO;
+using WpfPath = System.Windows.Shapes.Path;
+
 using LANRescue.ConsoleApp.Services;
 using LANRescue.ConsoleApp.Views;
 using LANRescue.Infrastructure.Network;
 using LANRescue.Application.Services;
-using System.IO;
-using WpfPath = System.Windows.Shapes.Path;
+using LANRescue.Infrastructure.Persistence;
 
 namespace LANRescue.ConsoleApp;
 
 public partial class MainWindow : Window
 {
     private readonly Button[] _navigationButtons;
+
+    private string _activePageTitleKey = "Page_Dashboard";
     private readonly Dictionary<string, UserControl> _pageCache = new(StringComparer.Ordinal);
     private string? _activePageKey;
     private bool _isIconRail;
@@ -35,8 +39,9 @@ public partial class MainWindow : Window
         UpdateThemeToggleText();
         SizeChanged += MainWindow_SizeChanged;
         ApplyResponsiveShell(ActualWidth > 0 ? ActualWidth : Width);
-        Navigate("Dashboard", "dashboard",
+        Navigate("Page_Dashboard", "dashboard",
             () => new DashboardView(), DashboardNavButton);
+        LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -48,6 +53,7 @@ public partial class MainWindow : Window
     protected override void OnClosed(EventArgs e)
     {
         ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
+        LocalizationManager.LanguageChanged -= LocalizationManager_LanguageChanged;
         base.OnClosed(e);
     }
 
@@ -57,27 +63,67 @@ public partial class MainWindow : Window
         UpdateThemeToggleText();
     }
 
-    private void UpdateThemeToggleText() =>
-        ThemeToggleText.Text = ThemeManager.CurrentTheme == AppTheme.Dark ? "Light" : "Dark";
-
-    private void Navigate(string title, string key, Func<UserControl> factory, Button activeButton)
+    private void UpdateThemeToggleText()
     {
+        string key =
+            ThemeManager.CurrentTheme == AppTheme.Dark
+                ? "Theme_SwitchToLight"
+                : "Theme_SwitchToDark";
+
+        ThemeToggleText.SetResourceReference(
+            TextBlock.TextProperty,
+            key);
+    }
+
+    private void LocalizationManager_LanguageChanged(
+    object? sender,
+    EventArgs e)
+    {
+        PageTitleText.SetResourceReference(
+            TextBlock.TextProperty,
+            _activePageTitleKey);
+
+        UpdateThemeToggleText();
+
+        // Refresh collapsed Sidebar tooltips after label translation.
+        ApplyResponsiveShell(ActualWidth);
+    }
+
+    private void Navigate(
+        string titleResourceKey,
+        string key,
+        Func<UserControl> factory,
+        Button activeButton)
+    {
+        _activePageTitleKey = titleResourceKey;
+
         if (!_pageCache.TryGetValue(key, out var view))
         {
             view = factory();
             _pageCache.Add(key, view);
         }
 
-        PageTitleText.Text = title;
-        if (!ReferenceEquals(PageHost.Content, view)) PageHost.Content = view;
+        // Use DynamicResource instead of a fixed English string.
+        PageTitleText.SetResourceReference(
+            TextBlock.TextProperty,
+            titleResourceKey);
+
+        if (!ReferenceEquals(PageHost.Content, view))
+            PageHost.Content = view;
+
         foreach (var button in _navigationButtons)
         {
             button.ClearValue(Button.BackgroundProperty);
             button.FontWeight = FontWeights.Medium;
         }
-        activeButton.SetResourceReference(Button.BackgroundProperty, "NavSelectedBrush");
+
+        activeButton.SetResourceReference(
+            Button.BackgroundProperty,
+            "NavSelectedBrush");
+
         activeButton.FontWeight = FontWeights.SemiBold;
 
+        // Preserve the existing page transition logic.
         if (MotionSettings.Current.ReducedMotion)
         {
             PageHost.BeginAnimation(UIElement.OpacityProperty, null);
@@ -88,15 +134,32 @@ public partial class MainWindow : Window
         {
             PageHost.BeginAnimation(UIElement.OpacityProperty, null);
             PageHost.Opacity = 0;
+
             var slide = new TranslateTransform(0, 6);
             PageHost.RenderTransform = slide;
-            var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(145))
-            { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
-            var move = new DoubleAnimation(6, 0, TimeSpan.FromMilliseconds(165))
-            { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+
+            var fade = new DoubleAnimation(
+                0, 1, TimeSpan.FromMilliseconds(145))
+            {
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            var move = new DoubleAnimation(
+                6, 0, TimeSpan.FromMilliseconds(165))
+            {
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
             PageHost.BeginAnimation(UIElement.OpacityProperty, fade);
             slide.BeginAnimation(TranslateTransform.YProperty, move);
         }
+
         _activePageKey = key;
     }
 
@@ -122,7 +185,20 @@ public partial class MainWindow : Window
                 label.Visibility = iconRail ? Visibility.Collapsed : Visibility.Visible;
                 icon.Margin = iconRail ? new Thickness(0) : new Thickness(0, 0, 12, 0);
                 panel.HorizontalAlignment = iconRail ? HorizontalAlignment.Center : HorizontalAlignment.Left;
-                button.ToolTip = iconRail ? label.Text : null;
+                if (iconRail)
+                {
+                    button.ToolTip = label.Text;
+                }
+                else
+                {
+                    string tooltipKey = button == DashboardNavButton ? "Tooltip_Dashboard"
+                        : button == DevicesNavButton ? "Tooltip_Devices"
+                        : button == IpConflictsNavButton ? "Tooltip_IpConflicts"
+                        : button == IpRecoveryNavButton ? "Tooltip_IpRecovery"
+                        : button == DiagnosticsNavButton ? "Tooltip_Diagnostics"
+                        : "Tooltip_Settings";
+                    button.SetResourceReference(FrameworkElement.ToolTipProperty, tooltipKey);
+                }
                 button.HorizontalContentAlignment = iconRail ? HorizontalAlignment.Center : HorizontalAlignment.Left;
             }
         }
@@ -137,23 +213,78 @@ public partial class MainWindow : Window
     private void ThemeToggle_Click(object sender, RoutedEventArgs e) =>
         ThemeManager.SetTheme(ThemeManager.CurrentTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark);
 
-    private void Dashboard_Click(object sender, RoutedEventArgs e) =>
-        Navigate("Dashboard", "dashboard", () => new DashboardView(), DashboardNavButton);
-    private void Devices_Click(object sender, RoutedEventArgs e) =>
-        Navigate("Devices", "devices", () => new DevicesView(), DevicesNavButton);
-    private void IpConflicts_Click(object sender, RoutedEventArgs e) =>
-        Navigate("IP Conflicts", "conflicts", () => new IpConflictView(), IpConflictsNavButton);
-    private void IpRecovery_Click(object sender, RoutedEventArgs e) =>
-        Navigate("IP Recovery", "recovery", () => new IpRecoveryView(), IpRecoveryNavButton);
+    private void Dashboard_Click(
+    object sender,
+    RoutedEventArgs e) =>
+    Navigate(
+        "Page_Dashboard",
+        "dashboard",
+        () => new DashboardView(),
+        DashboardNavButton);
+
+    private void Devices_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Navigate(
+            "Page_Devices",
+            "devices",
+            () => new DevicesView(),
+            DevicesNavButton);
+    private void IpConflicts_Click(
+    object sender,
+    RoutedEventArgs e)
+    {
+        Navigate("Page_IpConflicts", "conflicts", () =>
+        {
+            var databasePath = Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                "LANRescue",
+                "data",
+                "lanrescue.db");
+
+            var adapterProvider =
+                new WindowsNetworkAdapterProvider();
+
+            var arpProbe =
+                new WindowsArpProbe();
+
+            var repository =
+                new SqliteIpConflictRepository(databasePath);
+
+            var service =
+                new IpConflictService(
+                    adapterProvider,
+                    arpProbe,
+                    repository);
+
+            return new IpConflictView(service);
+
+        }, IpConflictsNavButton);
+    }
+    private void IpRecovery_Click(
+    object sender,
+    RoutedEventArgs e) =>
+    Navigate(
+        "Page_IpRecovery",
+        "recovery",
+        () => new IpRecoveryView(),
+        IpRecoveryNavButton);
     private void Diagnostics_Click(object sender, RoutedEventArgs e)
     {
-        Navigate("Diagnostics", "diagnostics", () =>
+        Navigate("Page_Diagnostics", "diagnostics", () =>
         {
             var adapterProvider = new WindowsNetworkAdapterProvider();
             var connectivityProbe = new WindowsConnectivityProbe();
             return new DiagnosticsView(new DiagnosticService(adapterProvider, connectivityProbe));
         }, DiagnosticsNavButton);
     }
-    private void Settings_Click(object sender, RoutedEventArgs e) =>
-        Navigate("Settings", "settings", () => new SettingsView(), SettingsNavButton);
+    private void Settings_Click(
+    object sender,
+    RoutedEventArgs e) =>
+    Navigate(
+        "Page_Settings",
+        "settings",
+        () => new SettingsView(),
+        SettingsNavButton);
 }

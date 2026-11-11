@@ -56,11 +56,11 @@
                                     Grid.Column="1"
                                     VerticalAlignment="Center"
                                     Margin="8,0,0,0">
-                            <TextBlock Text="LAN RESCUE"
+                            <TextBlock Text="{DynamicResource App_Name}"
                                        Foreground="{DynamicResource TextPrimaryBrush}"
                                        FontSize="17"
                                        FontWeight="Bold"/>
-                            <TextBlock Text="NETWORK OPERATIONS"
+                            <TextBlock Text="{DynamicResource Shell_BrandSubtitle}"
                                        Foreground="{DynamicResource SidebarMutedBrush}"
                                        FontSize="10"
                                        FontWeight="SemiBold"
@@ -74,14 +74,14 @@
 
                 <StackPanel DockPanel.Dock="Top">
                     <TextBlock x:Name="WorkspaceSectionLabel"
-                               Text="WORKSPACE"
+                               Text="{DynamicResource Shell_Workspace}"
                                Foreground="{DynamicResource SidebarMutedBrush}"
                                FontSize="10"
                                FontWeight="Bold"
                                Margin="10,0,0,8"/>
                     <Button x:Name="DashboardNavButton"
-                            AutomationProperties.Name="Dashboard"
-                            ToolTip="Network overview"
+                            AutomationProperties.Name="{DynamicResource Nav_Dashboard}"
+                            ToolTip="{DynamicResource Tooltip_Dashboard}"
                             Style="{StaticResource NavButtonStyle}"
                             Click="Dashboard_Click">
                         <StackPanel Orientation="Horizontal"
@@ -90,13 +90,13 @@
                                   Style="{StaticResource NavigationIconPathStyle}"
                                   Margin="0,0,12,0"/>
                             <TextBlock x:Name="DashboardNavLabel"
-                                       Text="Dashboard"
+                                       Text="{DynamicResource Nav_Dashboard}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="DevicesNavButton"
-                            AutomationProperties.Name="Devices"
-                            ToolTip="Managed devices"
+                            AutomationProperties.Name="{DynamicResource Nav_Devices}"
+                            ToolTip="{DynamicResource Tooltip_Devices}"
                             Style="{StaticResource NavButtonStyle}"
                             Click="Devices_Click">
                         <StackPanel Orientation="Horizontal"
@@ -105,13 +105,13 @@
                                   Style="{StaticResource NavigationIconPathStyle}"
                                   Margin="0,0,12,0"/>
                             <TextBlock x:Name="DevicesNavLabel"
-                                       Text="Devices"
+                                       Text="{DynamicResource Nav_Devices}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="IpConflictsNavButton"
-                            AutomationProperties.Name="IP Conflicts"
-                            ToolTip="IP conflicts"
+                            AutomationProperties.Name="{DynamicResource Nav_IpConflicts}"
+                            ToolTip="{DynamicResource Tooltip_IpConflicts}"
                             Style="{StaticResource NavButtonStyle}"
                             Click="IpConflicts_Click">
                         <StackPanel Orientation="Horizontal"
@@ -120,13 +120,13 @@
                                   Style="{StaticResource NavigationIconPathStyle}"
                                   Margin="0,0,12,0"/>
                             <TextBlock x:Name="IpConflictsNavLabel"
-                                       Text="IP Conflicts"
+                                       Text="{DynamicResource Nav_IpConflicts}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="IpRecoveryNavButton"
-                            AutomationProperties.Name="IP Recovery"
-                            ToolTip="IP recovery"
+                            AutomationProperties.Name="{DynamicResource Nav_IpRecovery}"
+                            ToolTip="{DynamicResource Tooltip_IpRecovery}"
                             Style="{StaticResource NavButtonStyle}"
                             Click="IpRecovery_Click">
                         <StackPanel Orientation="Horizontal"
@@ -135,13 +135,13 @@
                                   Style="{StaticResource NavigationIconPathStyle}"
                                   Margin="0,0,12,0"/>
                             <TextBlock x:Name="IpRecoveryNavLabel"
-                                       Text="IP Recovery"
+                                       Text="{DynamicResource Nav_IpRecovery}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="DiagnosticsNavButton"
-                            AutomationProperties.Name="Diagnostics"
-                            ToolTip="Connectivity diagnostics"
+                            AutomationProperties.Name="{DynamicResource Nav_Diagnostics}"
+                            ToolTip="{DynamicResource Tooltip_Diagnostics}"
                             Style="{StaticResource NavButtonStyle}"
                             Click="Diagnostics_Click">
                         <StackPanel Orientation="Horizontal"
@@ -150,7 +150,7 @@
                                   Style="{StaticResource NavigationIconPathStyle}"
                                   Margin="0,0,12,0"/>
                             <TextBlock x:Name="DiagnosticsNavLabel"
-                                       Text="Diagnostics"
+                                       Text="{DynamicResource Nav_Diagnostics}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
@@ -158,8 +158,8 @@
 
                 <StackPanel DockPanel.Dock="Bottom">
                     <Button x:Name="SettingsNavButton"
-                            AutomationProperties.Name="Settings"
-                            ToolTip="Application settings"
+                            AutomationProperties.Name="{DynamicResource Nav_Settings}"
+                            ToolTip="{DynamicResource Tooltip_Settings}"
                             Style="{StaticResource NavButtonStyle}"
                             Click="Settings_Click">
                         <StackPanel Orientation="Horizontal"
@@ -168,7 +168,7 @@
                                   Style="{StaticResource NavigationIconPathStyle}"
                                   Margin="0,0,12,0"/>
                             <TextBlock x:Name="SettingsNavLabel"
-                                       Text="Settings"
+                                       Text="{DynamicResource Nav_Settings}"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
@@ -180,11 +180,11 @@
                             Padding="12"
                             Margin="0,14,0,0">
                         <StackPanel>
-                            <TextBlock Text="LOCAL INVENTORY"
+                            <TextBlock Text="{DynamicResource Shell_LocalInventoryTitle}"
                                        Foreground="{DynamicResource PrimaryBrush}"
                                        FontWeight="Bold"
                                        FontSize="10"/>
-                            <TextBlock Text="SQLite · Saved on this PC"
+                            <TextBlock Text="{DynamicResource Shell_LocalInventorySaved}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        FontSize="10"
                                        Margin="0,5,0,0"/>
@@ -219,11 +219,11 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock x:Name="PageTitleText"
-                                   Text="Dashboard"
+                                   Text="{DynamicResource Nav_Dashboard}"
                                    FontSize="18"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        <TextBlock Text="IT NETWORK OPERATIONS"
+                        <TextBlock Text="{DynamicResource Shell_ItNetworkOperations}"
                                    FontSize="10"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
@@ -233,19 +233,19 @@
                                 Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <Button x:Name="ThemeToggleButton"
-                                AutomationProperties.Name="Toggle color theme"
+                                AutomationProperties.Name="{DynamicResource Tooltip_ToggleTheme}"
                                 Style="{StaticResource QuietButtonStyle}"
                                 Height="38"
                                 Margin="0,0,10,0"
                                 Click="ThemeToggle_Click"
-                                ToolTip="Switch Light / Dark theme">
+                                ToolTip="{DynamicResource Tooltip_Theme}">
                             <StackPanel Orientation="Horizontal"
                                         VerticalAlignment="Center">
                                 <Path Data="{StaticResource IconThemeGeometry}"
                                       Style="{StaticResource ToolbarIconPathStyle}"
                                       Margin="0,0,8,0"/>
                                 <TextBlock x:Name="ThemeToggleText"
-                                           Text="Dark"
+                                           Text="{DynamicResource Theme_SwitchToDark}"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
@@ -260,7 +260,7 @@
                                          Height="7"
                                          Fill="{DynamicResource PrimaryBrush}"
                                          Margin="0,0,8,0"/>
-                                <TextBlock Text="Local inventory"
+                                <TextBlock Text="{DynamicResource Shell_LocalInventory}"
                                            FontSize="10"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
@@ -285,12 +285,12 @@
                 <DockPanel x:Name="FooterContentPanel"
                            Margin="24,0">
                     <TextBlock x:Name="FooterVersionText"
-                               Text="LAN Rescue · Fresh Fluent"
+                               Text="{DynamicResource Footer_Brand}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                FontSize="10"
                                VerticalAlignment="Center"/>
                     <TextBlock x:Name="FooterStatusText"
-                               Text="Local inventory only · Network operations are disabled"
+                               Text="{DynamicResource Shell_FooterStatus}"
                                Foreground="{DynamicResource WarningBrush}"
                                FontSize="10"
                                VerticalAlignment="Center"

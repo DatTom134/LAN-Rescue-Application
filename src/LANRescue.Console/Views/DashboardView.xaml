@@ -6,38 +6,38 @@
         <Border Style="{StaticResource PageContentContainerStyle}">
             <StackPanel>
             <StackPanel Margin="0,0,0,20">
-                <TextBlock Text="Network overview" Style="{StaticResource PageTitleTextStyle}"/>
-                <TextBlock Text="A sample snapshot of managed endpoints and network health."
+                <TextBlock Text="{DynamicResource Dashboard_Title}" Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="{DynamicResource Dashboard_Description}"
                            Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
             </StackPanel>
 
             <UniformGrid x:Name="DashboardKpiGrid" Columns="4" Margin="-6,0,-6,18" SizeChanged="DashboardKpiGrid_SizeChanged">
                 <Border Style="{StaticResource CardBorderStyle}" Margin="6,0" MinHeight="128">
                     <StackPanel>
-                        <TextBlock Text="Managed devices" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
+                        <TextBlock Text="{DynamicResource Dashboard_ManagedDevices}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
                         <TextBlock Text="06" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,9,0,2"/>
-                        <TextBlock Text="Sample inventory" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{DynamicResource Dashboard_SampleInventory}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource CardBorderStyle}" Margin="6,0" MinHeight="128">
                     <StackPanel>
-                        <TextBlock Text="Agents online" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
+                        <TextBlock Text="{DynamicResource Dashboard_AgentsOnline}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
                         <TextBlock Text="01" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" Margin="0,9,0,2"/>
-                        <TextBlock Text="Sample status" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{DynamicResource Dashboard_SampleStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource CardBorderStyle}" Margin="6,0" MinHeight="128">
                     <StackPanel>
-                        <TextBlock Text="IP conflicts" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
+                        <TextBlock Text="{DynamicResource Dashboard_IpConflicts}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
                         <TextBlock Text="02" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource DangerBrush}" Margin="0,9,0,2"/>
-                        <TextBlock Text="Sample conflict records" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{DynamicResource Dashboard_SampleConflictRecords}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource CardBorderStyle}" Margin="6,0" MinHeight="128">
                     <StackPanel>
-                        <TextBlock Text="Unknown reachability" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
+                        <TextBlock Text="{DynamicResource Dashboard_UnknownReachability}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"/>
                         <TextBlock Text="03" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" Margin="0,9,0,2"/>
-                        <TextBlock Text="Not confirmed offline" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
+                        <TextBlock Text="{DynamicResource Dashboard_NotConfirmedOffline}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
@@ -50,26 +50,26 @@
                 </Grid.ColumnDefinitions>
                 <Border x:Name="PriorityScenarioCard" Grid.Column="0" Style="{StaticResource GlassCardBorderStyle}">
                     <StackPanel>
-                        <TextBlock Text="Priority scenario" Style="{StaticResource SectionTitleTextStyle}"/>
-                        <TextBlock Text="PC-B and PC-C are shown with the same IPv4 address. The records are illustrative only."
+                        <TextBlock Text="{DynamicResource Dashboard_PriorityScenario}" Style="{StaticResource SectionTitleTextStyle}"/>
+                        <TextBlock Text="{DynamicResource Dashboard_PriorityDescription}"
                                    Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,5,0,14"
                                    FontSize="11" TextWrapping="Wrap"/>
                         <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSoft}"
                                 BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,9">
                             <StackPanel>
-                                <TextBlock Text="PC-B · Target for recovery" FontWeight="SemiBold"/>
+                                <TextBlock Text="{DynamicResource Dashboard_TargetForRecovery}" FontWeight="SemiBold"/>
                                 <TextBlock Text="192.168.110.93 / 255.255.255.0" Margin="0,7,0,0" FontSize="12"/>
-                                <TextBlock Text="Gateway: 192.168.110.9" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,3,0,0" FontSize="11"/>
-                                <TextBlock Text="Identity: QA-PC-002 · Not verified" Foreground="{DynamicResource WarningBrush}" Margin="0,7,0,0" FontSize="10"/>
+                                <TextBlock Text="{DynamicResource Dashboard_Gateway}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,3,0,0" FontSize="11"/>
+                                <TextBlock Text="{DynamicResource Dashboard_IdentityPcB}" Foreground="{DynamicResource WarningBrush}" Margin="0,7,0,0" FontSize="10"/>
                             </StackPanel>
                         </Border>
                         <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrushSoft}"
                                 BorderThickness="1" CornerRadius="10" Padding="14">
                             <StackPanel>
-                                <TextBlock Text="PC-C · Existing endpoint" FontWeight="SemiBold"/>
+                                <TextBlock Text="{DynamicResource Dashboard_ExistingEndpoint}" FontWeight="SemiBold"/>
                                 <TextBlock Text="192.168.110.93 / 255.255.255.0" Margin="0,7,0,0" FontSize="12"/>
-                                <TextBlock Text="Gateway: 192.168.110.9" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,3,0,0" FontSize="11"/>
-                                <TextBlock Text="Identity: QA-PC-003 · Not verified" Foreground="{DynamicResource WarningBrush}" Margin="0,7,0,0" FontSize="10"/>
+                                <TextBlock Text="{DynamicResource Dashboard_Gateway}" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,3,0,0" FontSize="11"/>
+                                <TextBlock Text="{DynamicResource Dashboard_IdentityPcC}" Foreground="{DynamicResource WarningBrush}" Margin="0,7,0,0" FontSize="10"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -77,17 +77,17 @@
 
                 <Border x:Name="RecentEventsCard" Grid.Column="2" Style="{StaticResource CardBorderStyle}">
                     <StackPanel>
-                        <TextBlock Text="Recent events" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,10"/>
-                        <TextBlock Text="19:02  ·  Sample IP conflict detected for 192.168.110.93"
+                        <TextBlock Text="{DynamicResource Dashboard_RecentEvents}" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,10"/>
+                        <TextBlock Text="{DynamicResource Dashboard_EventConflict}"
                                    Margin="0,7" Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" FontSize="11"/>
                         <Separator Margin="0,5" Background="{DynamicResource BorderBrushSoft}"/>
-                        <TextBlock Text="18:57  ·  Sample Agent heartbeat received from IT-PC-A"
+                        <TextBlock Text="{DynamicResource Dashboard_EventHeartbeat}"
                                    Margin="0,7" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" FontSize="11"/>
                         <Separator Margin="0,5" Background="{DynamicResource BorderBrushSoft}"/>
-                        <TextBlock Text="18:45  ·  Demo mode started; no network changes were made"
+                        <TextBlock Text="{DynamicResource Dashboard_EventDemo}"
                                    Margin="0,7" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" FontSize="11"/>
                         <Border Background="{DynamicResource WarningSurfaceBrush}" CornerRadius="9" Padding="10" Margin="0,14,0,0">
-                            <TextBlock Text="Sample data only · No live network polling is enabled."
+                            <TextBlock Text="{DynamicResource Dashboard_SampleDataNotice}"
                                        Foreground="{DynamicResource WarningTextBrush}" FontSize="10" TextWrapping="Wrap"/>
                         </Border>
                     </StackPanel>

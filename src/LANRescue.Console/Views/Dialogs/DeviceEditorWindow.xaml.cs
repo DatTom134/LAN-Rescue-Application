@@ -11,6 +11,7 @@ namespace LANRescue.ConsoleApp.Views.Dialogs;
 public partial class DeviceEditorWindow : Window
 {
     private readonly ManagedDevice? _existing;
+    private string? _validationMessageResourceKey;
 
     public DeviceEditorWindow(ManagedDevice? existing = null)
     {
@@ -22,7 +23,33 @@ public partial class DeviceEditorWindow : Window
         PopulateFields();
         SourceInitialized += (_, _) => WindowBackdrop.Apply(this, ThemeManager.CurrentTheme, transient: true);
         ThemeManager.ThemeChanged += ThemeManager_ThemeChanged;
-        Closed += (_, _) => ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
+        LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
+        Closed += (_, _) =>
+        {
+            ThemeManager.ThemeChanged -= ThemeManager_ThemeChanged;
+            LocalizationManager.LanguageChanged -= LocalizationManager_LanguageChanged;
+        };
+    }
+
+
+    private void LocalizationManager_LanguageChanged(object? sender, EventArgs e)
+    {
+        UpdateDialogTitle();
+
+        // Re-evaluate enum item templates after the resource dictionary changes.
+        DeviceTypeCombo.Items.Refresh();
+        AssignmentModeCombo.Items.Refresh();
+
+        if (_validationMessageResourceKey is not null)
+            ValidationMessageText.Text =
+                LocalizationManager.GetString(_validationMessageResourceKey);
+    }
+
+    private void UpdateDialogTitle()
+    {
+        DialogTitleText.Text = _existing is null
+            ? LocalizationManager.GetString("DeviceEditor_AddDevice")
+            : LocalizationManager.Format("DeviceEditor_EditDevice", _existing.DeviceCode);
     }
 
     private void DialogHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -46,7 +73,7 @@ public partial class DeviceEditorWindow : Window
 
     private void PopulateFields()
     {
-        DialogTitleText.Text = _existing is null ? "Add device" : $"Edit device · {_existing.DeviceCode}";
+        UpdateDialogTitle();
         DeviceCodeBox.Text = _existing?.DeviceCode ?? string.Empty;
         DeviceNameBox.Text = _existing?.DeviceName ?? string.Empty;
         DeviceTypeCombo.SelectedItem = _existing?.Type ?? DeviceType.Computer;
@@ -89,13 +116,13 @@ public partial class DeviceEditorWindow : Window
         var name = DeviceNameBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
         {
-            ShowValidation("Device code and device name are required.");
+            ShowValidation("DeviceEditor_RequiredError");
             return;
         }
 
         if (DeviceTypeCombo.SelectedItem is not DeviceType deviceType)
         {
-            MessageBox.Show(this, "Please select a device type.", "Check device information",
+            MessageBox.Show(this, LocalizationManager.GetString("DeviceEditor_SelectType"), LocalizationManager.GetString("DeviceEditor_CheckDeviceInformation"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -105,8 +132,8 @@ public partial class DeviceEditorWindow : Window
         if (!string.IsNullOrWhiteSpace(ipv4Text) &&
             (!IPAddress.TryParse(ipv4Text, out parsedIpv4) || parsedIpv4.AddressFamily != AddressFamily.InterNetwork))
         {
-            MessageBox.Show(this, "IPv4 address is invalid. Enter an IPv4 address or leave it blank.",
-                "Check network configuration", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, LocalizationManager.GetString("DeviceEditor_InvalidIPv4"),
+                LocalizationManager.GetString("DeviceEditor_CheckNetworkConfiguration"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -115,8 +142,8 @@ public partial class DeviceEditorWindow : Window
         {
             if (!int.TryParse(PrefixLengthBox.Text.Trim(), out var prefix) || prefix is < 0 or > 32)
             {
-                MessageBox.Show(this, "IPv4 prefix length must be an integer from 0 to 32.",
-                    "Check network configuration", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, LocalizationManager.GetString("DeviceEditor_InvalidPrefix"),
+                    LocalizationManager.GetString("DeviceEditor_CheckNetworkConfiguration"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             prefixLength = prefix;
@@ -125,7 +152,7 @@ public partial class DeviceEditorWindow : Window
         var gateway = GatewayBox.Text.Trim();
         if (!string.IsNullOrWhiteSpace(gateway) && !IPAddress.TryParse(gateway, out _))
         {
-            MessageBox.Show(this, "Default gateway is not a valid IP address.", "Check network configuration",
+            MessageBox.Show(this, LocalizationManager.GetString("DeviceEditor_InvalidGateway"), LocalizationManager.GetString("DeviceEditor_CheckNetworkConfiguration"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -134,8 +161,8 @@ public partial class DeviceEditorWindow : Window
         var invalidDns = dnsServers.FirstOrDefault(value => !IPAddress.TryParse(value, out _));
         if (invalidDns is not null)
         {
-            MessageBox.Show(this, $"DNS server '{invalidDns}' is not a valid IP address.",
-                "Check network configuration", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(this, LocalizationManager.Format("DeviceEditor_InvalidDns", invalidDns),
+                LocalizationManager.GetString("DeviceEditor_CheckNetworkConfiguration"), MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -233,9 +260,10 @@ public partial class DeviceEditorWindow : Window
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
-    private void ShowValidation(string message)
+    private void ShowValidation(string resourceKey)
     {
-        ValidationMessageText.Text = message;
+        _validationMessageResourceKey = resourceKey;
+        ValidationMessageText.Text = LocalizationManager.GetString(resourceKey);
         ValidationMessageText.Visibility = Visibility.Visible;
     }
 }

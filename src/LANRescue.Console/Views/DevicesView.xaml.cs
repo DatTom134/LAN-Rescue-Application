@@ -35,12 +35,36 @@ public partial class DevicesView : UserControl
             "LANRescue", "data", "lanrescue.db");
         _catalog = new DeviceCatalogService(new SqliteDeviceRepository(databasePath));
         Loaded += DevicesView_Loaded;
+        Unloaded += DevicesView_Unloaded;
+    }
+
+    private void DevicesView_Unloaded(object sender, RoutedEventArgs e)
+    {
+        LocalizationManager.LanguageChanged -= LocalizationManager_LanguageChanged;
+    }
+
+    private void LocalizationManager_LanguageChanged(object? sender, EventArgs e)
+    {
+        var selectedId = (DevicesGrid.SelectedItem as DeviceRecord)?.Source.Id;
+        if (_catalogAvailable)
+            ApplyFilter(selectedId);
+        else
+        {
+            RecordCountText.Text = LocalizationManager.GetString("Devices_DatabaseUnavailable");
+            CatalogErrorMessage.Text = LocalizationManager.GetString("Devices_DatabaseUnavailableDetail");
+        }
     }
 
     private async void DevicesView_Loaded(object sender, RoutedEventArgs e)
     {
+        LocalizationManager.LanguageChanged -= LocalizationManager_LanguageChanged;
+        LocalizationManager.LanguageChanged += LocalizationManager_LanguageChanged;
+
         if (_isInitialized)
+        {
+            LocalizationManager_LanguageChanged(this, EventArgs.Empty);
             return;
+        }
 
         _isInitialized = true;
         CatalogLoadingState.Visibility = Visibility.Visible;
@@ -60,11 +84,11 @@ public partial class DevicesView : UserControl
             _catalogAvailable = true;
             await ReloadDevicesAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             _catalogAvailable = false;
-            RecordCountText.Text = "Database unavailable";
-            CatalogErrorMessage.Text = ex.Message;
+            RecordCountText.Text = LocalizationManager.GetString("Devices_DatabaseUnavailable");
+            CatalogErrorMessage.Text = LocalizationManager.GetString("Devices_DatabaseUnavailableDetail");
             CatalogErrorState.Visibility = Visibility.Visible;
         }
         finally
@@ -113,7 +137,11 @@ public partial class DevicesView : UserControl
         var records = query.Select(device => new DeviceRecord(device)).ToList();
         DevicesGrid.ItemsSource = new ObservableCollection<DeviceRecord>(records);
         CatalogEmptyState.Visibility = records.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-        RecordCountText.Text = $"{records.Count} shown · {_devices.Count} total · {_devices.Count(device => device.IsManaged)} managed";
+        RecordCountText.Text = LocalizationManager.Format(
+            "Devices_RecordCount",
+            records.Count,
+            _devices.Count,
+            _devices.Count(device => device.IsManaged));
 
         var target = selectDeviceId.HasValue
             ? records.FirstOrDefault(record => record.Source.Id == selectDeviceId.Value)
@@ -258,14 +286,18 @@ public partial class DevicesView : UserControl
         }
         catch (DeviceValidationException ex)
         {
-            MessageBox.Show(Window.GetWindow(this), string.Join(Environment.NewLine, ex.Errors),
-                "Cannot save device", MessageBoxButton.OK, MessageBoxImage.Warning);
+            System.Diagnostics.Debug.WriteLine($"[Devices] Validation failed: {ex}");
+            MessageBox.Show(Window.GetWindow(this),
+                LocalizationManager.GetString("Devices_ValidationFailed"),
+                LocalizationManager.GetString("Devices_CannotSave"),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[Devices] Save failed: {ex}");
             MessageBox.Show(Window.GetWindow(this),
-                $"The device could not be saved. Check that the database file is accessible.\n\n{ex.Message}",
-                "Save failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                LocalizationManager.GetString("Devices_SaveError"),
+                LocalizationManager.GetString("Devices_SaveFailed"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -275,8 +307,8 @@ public partial class DevicesView : UserControl
             return;
 
         var result = MessageBox.Show(Window.GetWindow(this),
-            $"Stop managing '{selected.Source.DeviceCode}'?\n\nThe record will be retained in the database and can be reactivated later. No network configuration will be changed.",
-            "Stop managing device", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            LocalizationManager.Format("Devices_StopManagingConfirm", selected.Source.DeviceCode),
+            LocalizationManager.GetString("Devices_StopManagingTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (result != MessageBoxResult.Yes)
             return;
 
@@ -316,8 +348,8 @@ public partial class DevicesView : UserControl
         }
         catch (System.Runtime.InteropServices.ExternalException)
         {
-            MessageBox.Show(Window.GetWindow(this), "The device code could not be copied to the clipboard.",
-                "Clipboard unavailable", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(Window.GetWindow(this), LocalizationManager.GetString("Devices_ClipboardCopyCodeFailed"),
+                LocalizationManager.GetString("Devices_ClipboardUnavailable"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
@@ -333,8 +365,8 @@ public partial class DevicesView : UserControl
         }
         catch (System.Runtime.InteropServices.ExternalException)
         {
-            MessageBox.Show(Window.GetWindow(this), "The IPv4 address could not be copied to the clipboard.",
-                "Clipboard unavailable", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(Window.GetWindow(this), LocalizationManager.GetString("Devices_ClipboardCopyIPv4Failed"),
+                LocalizationManager.GetString("Devices_ClipboardUnavailable"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
@@ -347,8 +379,9 @@ public partial class DevicesView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show(Window.GetWindow(this), ex.Message, "Update inventory state failed",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Diagnostics.Debug.WriteLine($"[Devices] Update inventory state failed: {ex}");
+            MessageBox.Show(Window.GetWindow(this), LocalizationManager.GetString("Devices_UpdateStateFailed"),
+                LocalizationManager.GetString("Common_OperationStatus"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

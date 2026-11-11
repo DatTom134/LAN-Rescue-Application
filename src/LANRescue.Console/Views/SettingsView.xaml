@@ -7,9 +7,9 @@
         <Border Style="{StaticResource PageContentContainerStyle}">
             <StackPanel>
                 <StackPanel Margin="0,0,0,20">
-                    <TextBlock Text="Settings"
+                    <TextBlock Text="{DynamicResource Settings_Title}"
                                Style="{StaticResource PageTitleTextStyle}"/>
-                    <TextBlock Text="Personalize the workspace and review application information."
+                    <TextBlock Text="{DynamicResource Settings_Description}"
                                Style="{StaticResource PageSubtitleTextStyle}"
                                Margin="0,5,0,0"/>
                 </StackPanel>
@@ -22,9 +22,9 @@
                             <ColumnDefinition Width="220"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Appearance"
+                            <TextBlock Text="{DynamicResource Settings_Appearance}"
                                        Style="{StaticResource SectionTitleTextStyle}"/>
-                            <TextBlock Text="Choose the color scheme used throughout LAN Rescue. The selection is saved for this Windows user."
+                            <TextBlock Text="{DynamicResource Settings_AppearanceDescription}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        TextWrapping="Wrap"
                                        FontSize="12"
@@ -35,9 +35,9 @@
                                   Height="38"
                                   VerticalAlignment="Center"
                                   SelectionChanged="ThemeSelector_SelectionChanged">
-                            <ComboBoxItem Content="Light theme"
+                            <ComboBoxItem Content="{DynamicResource Settings_LightTheme}"
                                           Tag="Light"/>
-                            <ComboBoxItem Content="Dark theme"
+                            <ComboBoxItem Content="{DynamicResource Settings_DarkTheme}"
                                           Tag="Dark"/>
                         </ComboBox>
                     </Grid>
@@ -45,15 +45,58 @@
 
                 <Border Style="{StaticResource GlassCardBorderStyle}"
                         Margin="0,0,0,14">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="220"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock
+                                Text="{DynamicResource Settings_Language}"
+                                Style="{StaticResource SectionTitleTextStyle}"/>
+
+                            <TextBlock
+                                Text="{DynamicResource Settings_LanguageDescription}"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                TextWrapping="Wrap"
+                                FontSize="12"
+                                Margin="0,6,18,0"/>
+                        </StackPanel>
+
+                        <ComboBox
+                            x:Name="LanguageSelector"
+                            Grid.Column="1"
+                            Height="38"
+                            VerticalAlignment="Center"
+                            SelectedValuePath="Tag"
+                            SelectionChanged="LanguageSelector_SelectionChanged">
+
+                            <ComboBoxItem Tag="Vietnamese">
+                                <TextBlock
+                                    Text="{DynamicResource Language_Vietnamese}"/>
+                            </ComboBoxItem>
+
+                            <ComboBoxItem Tag="English">
+                                <TextBlock
+                                    Text="{DynamicResource Language_English}"/>
+                            </ComboBoxItem>
+
+                        </ComboBox>
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource GlassCardBorderStyle}"
+                        Margin="0,0,0,14">
                     <StackPanel>
-                        <TextBlock Text="Motion &amp; accessibility"
+                        <TextBlock Text="{DynamicResource Settings_MotionAccessibility}"
                                    Style="{StaticResource SectionTitleTextStyle}"/>
                         <CheckBox x:Name="ReducedMotionCheckBox"
-                                  Content="Reduce non-essential animations"
+                                  Content="{DynamicResource Settings_ReduceAnimations}"
                                   Margin="0,12,0,4"
                                   Checked="ReducedMotionCheckBox_Changed"
                                   Unchecked="ReducedMotionCheckBox_Changed"/>
-                        <TextBlock Text="Disables page and inspector transitions and smooth scrolling. Loading indicators remain visible as static progress feedback. This preference is saved for this Windows user."
+                        <TextBlock Text="{DynamicResource Settings_ReducedMotionDescription}"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap"
                                    FontSize="11"
@@ -64,14 +107,14 @@
                 <Border Style="{StaticResource CardBorderStyle}"
                         Margin="0,0,0,16">
                     <StackPanel>
-                        <TextBlock Text="Window effects"
+                        <TextBlock Text="{DynamicResource Settings_WindowEffects}"
                                    Style="{StaticResource SectionTitleTextStyle}"/>
-                        <TextBlock Text="On supported Windows 11 versions, LAN Rescue requests the native Mica backdrop and rounded window corners. Popup menus use translucent surfaces and fade transitions."
+                        <TextBlock Text="{DynamicResource Settings_WindowEffectsDescription}"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap"
                                    FontSize="12"
                                    Margin="0,7,0,0"/>
-                        <TextBlock Text="When these effects are unavailable, the application falls back to regular WPF surfaces and remains fully usable."
+                        <TextBlock Text="{DynamicResource Settings_WindowEffectsFallback}"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextWrapping="Wrap"
                                    FontSize="11"
@@ -81,7 +124,7 @@
 
                 <Border Style="{StaticResource CardBorderStyle}">
                     <StackPanel>
-                        <TextBlock Text="Application"
+                        <TextBlock Text="{DynamicResource Settings_Application}"
                                    Style="{StaticResource SectionTitleTextStyle}"
                                    Margin="0,0,0,10"/>
                         <Grid>
@@ -97,24 +140,24 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="34"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Text="Product"
+                            <TextBlock Text="{DynamicResource Settings_Product}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="1"
-                                       Text="LAN Rescue"
+                                       Text="{DynamicResource App_Name}"
                                        FontWeight="SemiBold"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="1"
-                                       Text="Version"
+                                       Text="{DynamicResource Settings_Version}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center"/>
                             <TextBlock x:Name="VersionText"
                                        Grid.Row="1"
                                        Grid.Column="1"
-                                       Text="Unknown"
+                                       Text="{DynamicResource Settings_Unknown}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="2"
-                                       Text="Framework"
+                                       Text="{DynamicResource Settings_Framework}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="2"
@@ -122,15 +165,15 @@
                                        Text=".NET 10 / WPF"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="3"
-                                       Text="Storage"
+                                       Text="{DynamicResource Settings_Storage}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="3"
                                        Grid.Column="1"
-                                       Text="SQLite · Local device inventory"
+                                       Text="{DynamicResource Settings_StorageDescription}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="4"
-                                       Text="Database path"
+                                       Text="{DynamicResource Settings_DatabasePath}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Top"
                                        Margin="0,5,0,0"/>
@@ -141,12 +184,12 @@
                                        VerticalAlignment="Center"
                                        Margin="0,5,0,5"/>
                             <TextBlock Grid.Row="5"
-                                       Text="Network operations"
+                                       Text="{DynamicResource Settings_NetworkOperations}"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Grid.Row="5"
                                        Grid.Column="1"
-                                       Text="Disabled in this preview"
+                                       Text="{DynamicResource Settings_DisabledPreview}"
                                        Foreground="{DynamicResource WarningBrush}"
                                        VerticalAlignment="Center"/>
                         </Grid>

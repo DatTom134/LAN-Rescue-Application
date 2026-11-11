@@ -9,851 +9,54 @@
         <Border Style="{StaticResource PageContentContainerStyle}">
             <StackPanel>
 
-            <!-- Page header -->
-            <Grid Margin="0,0,0,20">
+                <!-- Page header -->
+                <Grid Margin="0,0,0,20">
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel>
-                    <TextBlock Text="Network diagnostics"
-                               Style="{StaticResource PageTitleTextStyle}"/>
-
-                    <TextBlock Text="Inspect network adapters and run source-bound connectivity tests."
-                               Style="{StaticResource PageSubtitleTextStyle}"
-                               Margin="0,5,0,0"/>
-                </StackPanel>
-
-                <Button x:Name="RefreshButton"
-                        Grid.Column="1"
-                        Style="{StaticResource QuietButtonStyle}"
-                        Height="38"
-                        MinWidth="110"
-                        VerticalAlignment="Center"
-                        Click="Refresh_Click"
-                        ToolTip="Read network adapter information again">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Path Data="{StaticResource IconRefreshGeometry}" Stroke="{DynamicResource TextPrimaryBrush}" StrokeThickness="1.4" Width="14" Height="14" Stretch="Uniform" Margin="0,0,7,0"/>
-                        <TextBlock Text="Refresh" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-
-            </Grid>
-
-            <!-- Adapter Summary -->
-            <Border Style="{StaticResource CardBorderStyle}"
-                    Margin="0,0,0,14">
-
-                <StackPanel>
-
-                    <!-- Summary heading -->
-                    <Grid Margin="0,0,0,14">
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel>
-
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="LOCAL NETWORK ADAPTERS"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource PrimaryBrush}"/>
-
-                            <TextBlock x:Name="StatusText"
-                                       Text="Waiting to read network adapters..."
-                                       FontSize="12"
-                                       Margin="0,7,0,0"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
-
-                        </StackPanel>
-
-                        <TextBlock x:Name="LastUpdatedText"
-                                   Grid.Column="1"
-                                   Style="{StaticResource MetadataTextStyle}"
-                                   Text="Not refreshed"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                   VerticalAlignment="Center"/>
-
-                    </Grid>
-
-                    <!-- Adapter category statistics -->
-                    <UniformGrid x:Name="AdapterSummaryStats"
-                                 Columns="5"
-                                 SizeChanged="AdapterSummaryStats_SizeChanged">
-
-                        <!-- Physical -->
-                        <StackPanel Margin="0,0,10,0">
-
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="PHYSICAL"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                            <TextBlock x:Name="PhysicalAdapterCountText"
-                                       Text="—"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Margin="0,4,0,0"/>
-
-                        </StackPanel>
-
-                        <!-- Software / Virtual -->
-                        <StackPanel Margin="8,0">
-
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="SOFTWARE REPORTED"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                            <TextBlock x:Name="VirtualAdapterCountText"
-                                       Text="—"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Margin="0,4,0,0"/>
-
-                        </StackPanel>
-
-                        <!-- Tunnel -->
-                        <StackPanel Margin="8,0">
-
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="TUNNEL"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                            <TextBlock x:Name="TunnelAdapterCountText"
-                                       Text="—"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Margin="0,4,0,0"/>
-
-                        </StackPanel>
-
-                        <!-- Other / Unknown -->
-                        <StackPanel Margin="8,0">
-
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="UNCLASSIFIED / OTHER"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                            <TextBlock x:Name="OtherAdapterCountText"
-                                       Text="—"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Margin="0,4,0,0"/>
-
-                        </StackPanel>
-
-                        <!-- Link Up -->
-                        <StackPanel Margin="8,0">
-
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="LINK UP"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                            <TextBlock x:Name="UpAdapterCountText"
-                                       Text="—"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource SuccessBrush}"
-                                       Margin="0,4,0,0"/>
-
-                        </StackPanel>
-
-                    </UniformGrid>
-
-                    <TextBlock Text="Classification is based on Windows adapter metadata. Unavailable metadata is reported as unclassified."
-                               FontSize="10"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               Margin="0,12,0,0"
-                               TextWrapping="Wrap"/>
-
-                </StackPanel>
-
-            </Border>
-
-            <!-- Loading state -->
-            <TextBlock x:Name="LoadingText"
-                       Text="Reading network adapters from Windows..."
-                       FontSize="12"
-                       Foreground="{DynamicResource TextSecondaryBrush}"
-                       Margin="0,8,0,6"
-                       Visibility="Collapsed"/>
-            <ProgressBar x:Name="AdapterLoadingProgressBar" Height="3" IsIndeterminate="True"
-                         Margin="0,0,0,14" Visibility="Collapsed"/>
-
-            <!-- Empty state -->
-            <Border x:Name="EmptyState"
-                    Style="{StaticResource CardBorderStyle}"
-                    Visibility="Collapsed"
-                    Margin="0,0,0,14">
-
-                <StackPanel>
-                    <TextBlock Text="No network adapters found"
-                               FontSize="14"
-                               FontWeight="SemiBold"/>
-
-                    <TextBlock Text="Windows did not return any non-loopback network adapters."
-                               FontSize="11"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               Margin="0,6,0,0"
-                               TextWrapping="Wrap"/>
-                </StackPanel>
-
-            </Border>
-
-            <!-- Error state -->
-            <Border x:Name="ErrorCard"
-                    Style="{StaticResource CardBorderStyle}"
-                    Background="{DynamicResource DangerSurfaceBrush}"
-                    Visibility="Collapsed"
-                    Margin="0,0,0,14">
-
-                <StackPanel>
-                    <TextBlock Text="Unable to read network adapters"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource DangerBrush}"/>
-
-                    <TextBlock x:Name="ErrorText"
-                               FontSize="11"
-                               Margin="0,6,0,0"
-                               TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextPrimaryBrush}"/>
-                </StackPanel>
-
-            </Border>
-
-            <!-- Responsive Connectivity Layout -->
-            <Grid x:Name="ConnectivityLayoutGrid"
-                  Margin="0,0,0,14"
-                  SizeChanged="ConnectivityLayoutGrid_SizeChanged">
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.9*"/>
-                    <ColumnDefinition Width="1.1*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="0"/>
-                </Grid.RowDefinitions>
-
-                <!-- Connectivity Tests -->
-                <Border x:Name="ConnectivityTestsCard"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Style="{StaticResource CardBorderStyle}"
-                        Margin="0,0,8,0"
-                        VerticalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
                     <StackPanel>
+                        <TextBlock Text="{DynamicResource Diagnostics_Title}"
+                                   Style="{StaticResource PageTitleTextStyle}"/>
 
-                        <StackPanel Margin="0,0,0,18">
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="CONNECTIVITY TESTS"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource PrimaryBrush}"/>
-
-                            <TextBlock Text="Run connectivity checks through a selected network adapter."
-                                       FontSize="12"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       Margin="0,5,0,0"
-                                       TextWrapping="Wrap"/>
-                        </StackPanel>
-
-                        <!-- Network adapter -->
-                        <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="NETWORK ADAPTER"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                   Margin="0,0,0,7"/>
-
-                        <ComboBox x:Name="AdapterComboBox"
-                                  ItemsSource="{Binding Adapters}"
-                                  DisplayMemberPath="Name"
-                                  SelectionChanged="AdapterComboBox_SelectionChanged"
-                                  ToolTip="Select the network adapter to test"/>
-
-                        <!-- Source IPv4 and Gateway -->
-                        <Grid Margin="0,14,0,0">
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Margin="0,0,8,0">
-
-                                <TextBlock Text="SOURCE IPv4"
-                                           FontSize="10"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,0,0,7"/>
-
-                                <ComboBox x:Name="SourceIpv4ComboBox"
-                                          SelectionChanged="SourceIpv4ComboBox_SelectionChanged"
-                                          ToolTip="Source address used by connectivity tests"/>
-
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1"
-                                        Margin="8,0,0,0">
-
-                                <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="DEFAULT GATEWAY"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,0,0,7"/>
-
-                                <TextBlock x:Name="GatewayValueText"
-                                           Text="Not configured"
-                                           FontSize="13"
-                                           VerticalAlignment="Center"
-                                           MinHeight="38"/>
-
-                            </StackPanel>
-
-                        </Grid>
-
-                        <Separator Margin="0,16,0,16"
-                                   Background="{DynamicResource BorderBrushSoft}"/>
-
-                        <!-- TCP and DNS configuration side by side -->
-                        <Grid>
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- ================================= -->
-                            <!-- TCP CONNECTION - LEFT COLUMN     -->
-                            <!-- ================================= -->
-
-                            <StackPanel Grid.Column="0"
-                                        Margin="0,0,14,0">
-
-                                <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="TCP CONNECTION"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource PrimaryBrush}"/>
-
-                                <TextBlock Text="Optional · IPv4 address and port."
-                                           FontSize="11"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,5,0,10"
-                                           MinHeight="30"
-                                           TextWrapping="Wrap"/>
-
-                                <Grid>
-
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Target IPv4 -->
-                                    <StackPanel Margin="0,0,8,0">
-
-                                        <TextBlock Text="TARGET IPv4"
-                                                   FontSize="10"
-                                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                                   Margin="0,0,0,6"/>
-
-                                        <TextBox x:Name="TcpTargetTextBox"
-                                                 Text=""
-                                                 MaxLength="15"
-                                                 TextChanged="ConnectivityInputs_TextChanged"
-                                                 ToolTip="Example: 192.168.110.5"/>
-
-                                    </StackPanel>
-
-                                    <!-- Port -->
-                                    <StackPanel Grid.Column="1"
-                                                Margin="8,0,0,0">
-
-                                        <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="PORT"
-                                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                                   Margin="0,0,0,6"/>
-
-                                        <TextBox x:Name="TcpPortTextBox"
-                                                 Text=""
-                                                 MaxLength="5"
-                                                 MinWidth="84"
-                                                 TextChanged="ConnectivityInputs_TextChanged"
-                                                 ToolTip="Valid range: 1–65535"/>
-
-                                    </StackPanel>
-
-                                </Grid>
-
-                            </StackPanel>
-
-                            <!-- Vertical separator -->
-                            <Border Grid.Column="1"
-                                    Width="1"
-                                    Background="{DynamicResource BorderBrushSoft}"
-                                    Margin="0,2,0,2"/>
-
-                            <!-- ================================= -->
-                            <!-- DNS RESOLUTION - RIGHT COLUMN    -->
-                            <!-- ================================= -->
-
-                            <StackPanel Grid.Column="2"
-                                        Margin="14,0,0,0">
-
-                                <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="DNS RESOLUTION"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource PrimaryBrush}"/>
-
-                                <TextBlock Text="Optional · Resolve a hostname."
-                                           FontSize="11"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,5,0,10"
-                                           MinHeight="30"
-                                           TextWrapping="Wrap"/>
-
-                                <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="HOSTNAME"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,0,0,6"/>
-
-                                <TextBox x:Name="DnsHostTextBox"
-                                         Text=""
-                                         TextChanged="ConnectivityInputs_TextChanged"
-                                         ToolTip="Example: www.microsoft.com"/>
-
-                                <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="DNS SERVER"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,10,0,5"/>
-
-                                <TextBlock x:Name="DnsServerValueText"
-                                           Text="Not configured"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"
-                                           TextWrapping="Wrap"/>
-
-                            </StackPanel>
-
-                        </Grid>
-
-                        <Separator Margin="0,16,0,16"
-                                   Background="{DynamicResource BorderBrushSoft}"/>
-
-                        <!-- Run button and description -->
-                        <Grid>
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Gateway Ping always runs. TCP and DNS are optional."
-                                       FontSize="11"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       VerticalAlignment="Center"
-                                       TextWrapping="Wrap"
-                                       Margin="0,0,12,0"/>
-
-                            <Button x:Name="RunTestsButton"
-                                    Grid.Column="1"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    MinWidth="130"
-                                    Click="RunConnectivityTests_Click">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path Data="{StaticResource IconRunGeometry}" Fill="{DynamicResource PrimaryButtonForegroundBrush}" Width="12" Height="12" Stretch="Uniform" Margin="0,0,7,0"/>
-                                    <TextBlock x:Name="RunTestsButtonText" Text="Run Tests" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-
-                        </Grid>
-
+                        <TextBlock Text="{DynamicResource Diagnostics_Description}"
+                                   Style="{StaticResource PageSubtitleTextStyle}"
+                                   Margin="0,5,0,0"/>
                     </StackPanel>
 
-                </Border>
-
-                <!-- Right column: Results and errors -->
-                <Grid x:Name="ConnectivityOutputPanel"
-                      Grid.Row="0"
-                      Grid.Column="1"
-                      Margin="8,0,0,0"
-                      VerticalAlignment="Stretch">
-
-                    <!-- Initial empty result state -->
-                    <!-- Initial diagnostic state -->
-                    <Border x:Name="ResultsPlaceholderCard"
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Style="{StaticResource CardBorderStyle}"
-                            MinHeight="340"
-                            VerticalAlignment="Stretch">
-
-                        <StackPanel VerticalAlignment="Center"
-                                    HorizontalAlignment="Center"
-                                    MaxWidth="480">
-
-                            <!-- Main state -->
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="TEST RESULTS"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource PrimaryBrush}"
-                                       HorizontalAlignment="Center"/>
-
-                            <TextBlock Text="Ready to diagnose"
-                                       Style="{StaticResource CardTitleTextStyle}"
-                                       Margin="0,10,0,0"
-                                       HorizontalAlignment="Center"
-                                       TextAlignment="Center"/>
-
-                            <TextBlock Text="Select a network adapter and configure optional TCP and DNS targets before running the tests."
-                                       Style="{StaticResource BodyTextStyle}"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       Margin="0,7,0,0"
-                                       TextWrapping="Wrap"
-                                       TextAlignment="Center"/>
-
-                            <!-- Diagnostic Summary -->
-                            <Border Background="{DynamicResource SurfaceElevatedBrush}"
-                                    BorderBrush="{DynamicResource BorderBrushSoft}"
-                                    BorderThickness="1"
-                                    CornerRadius="10"
-                                    Padding="14"
-                                    Margin="0,20,0,0">
-
-                                <StackPanel>
-
-                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="DIAGNOSTIC SUMMARY"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource PrimaryBrush}"/>
-
-                                    <!-- Adapter and source address -->
-                                    <Grid Margin="0,12,0,0">
-
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0"
-                                                    Margin="0,0,8,0">
-
-                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="ADAPTER"
-                                                       FontWeight="Bold"
-                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                                            <TextBlock x:Name="SummaryAdapterText"
-                                                       Text="Not selected"
-                                                       FontSize="12"
-                                                       FontWeight="Medium"
-                                                       Margin="0,5,0,0"
-                                                       TextWrapping="Wrap"/>
-
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1"
-                                                    Margin="8,0,0,0">
-
-                                            <TextBlock Text="SOURCE IPv4"
-                                                       FontSize="10"
-                                                       FontWeight="Bold"
-                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                                            <TextBlock x:Name="SummarySourceText"
-                                                       Text="Not selected"
-                                                       FontSize="12"
-                                                       FontWeight="Medium"
-                                                       Margin="0,5,0,0"
-                                                       TextWrapping="Wrap"/>
-
-                                        </StackPanel>
-
-                                    </Grid>
-
-                                    <Separator Margin="0,12,0,12"
-                                               Background="{DynamicResource BorderBrushSoft}"/>
-
-                                    <!-- Planned checks -->
-                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="PLANNED CHECKS"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                                    <TextBlock x:Name="SummaryChecksText"
-                                               Text="Select a network adapter to see planned checks."
-                                               FontSize="12"
-                                               Margin="0,5,0,0"
-                                               TextWrapping="Wrap"/>
-
-                                    <TextBlock Text="Gateway Ping is automatic. TCP and DNS run only when configured."
-                                               FontSize="10"
-                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                               Margin="0,8,0,0"
-                                               TextWrapping="Wrap"/>
-
-                                </StackPanel>
-
-                            </Border>
-
+                    <Button x:Name="RefreshButton"
+                            Grid.Column="1"
+                            Style="{StaticResource QuietButtonStyle}"
+                            Height="38"
+                            MinWidth="110"
+                            VerticalAlignment="Center"
+                            Click="Refresh_Click"
+                            ToolTip="{DynamicResource Diagnostics_ReadAdapterTooltip}">
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <Path Data="{StaticResource IconRefreshGeometry}"
+                                  Stroke="{DynamicResource TextPrimaryBrush}"
+                                  StrokeThickness="1.4"
+                                  Width="14"
+                                  Height="14"
+                                  Stretch="Uniform"
+                                  Margin="0,0,7,0"/>
+                            <TextBlock Text="{DynamicResource Diagnostics_Refresh}"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
-
-                    </Border>
-
-                    <!-- Connectivity Results -->
-                    <Border x:Name="ResultsCard"
-                            Style="{StaticResource CardBorderStyle}"
-                            Margin="0,0,0,0"
-                            VerticalAlignment="Stretch"
-                            Visibility="Collapsed">
-
-                        <StackPanel>
-
-                            <Grid Margin="0,0,0,14">
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel>
-
-                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="TEST RESULTS"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource PrimaryBrush}"/>
-
-                                    <TextBlock x:Name="ConnectivityStatusText"
-                                               Text="Waiting for test results..."
-                                               FontSize="13"
-                                               FontWeight="SemiBold"
-                                               Margin="0,6,0,0"/>
-
-                                </StackPanel>
-
-                                <TextBlock x:Name="ConnectivityInfoText"
-                                           Grid.Column="1"
-                                           FontSize="10"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           VerticalAlignment="Center"/>
-
-                            </Grid>
-
-                            <ProgressBar x:Name="ConnectivityProgressBar" Height="3" IsIndeterminate="True"
-                                         Margin="0,0,0,12" Visibility="Collapsed"/>
-
-                            <ItemsControl ItemsSource="{Binding EvidenceResults}">
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-
-                                        <Border Background="{DynamicResource SurfaceElevatedBrush}"
-                                                BorderBrush="{DynamicResource BorderBrushSoft}"
-                                                BorderThickness="1"
-                                                CornerRadius="10"
-                                                Padding="12"
-                                                Margin="0,0,0,8">
-
-                                            <Grid>
-
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="125"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="{Binding ProbeType}"
-                                                           FontSize="11"
-                                                           FontWeight="SemiBold"
-                                                           VerticalAlignment="Top"/>
-
-                                                <StackPanel Grid.Column="1"
-                                                            Margin="10,0">
-
-                                                    <TextBlock Text="{Binding Target}"
-                                                               FontSize="12"
-                                                               FontWeight="Medium"
-                                                               TextWrapping="Wrap"/>
-
-                                                    <TextBlock Text="{Binding Details}"
-                                                               FontSize="11"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               Margin="0,5,0,0"
-                                                               TextWrapping="Wrap"/>
-
-                                                    <TextBlock FontSize="10"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               Margin="0,5,0,0"
-                                                               Text="{Binding SourceAddress, StringFormat=Source: {0}}"/>
-
-                                                    <TextBlock FontSize="10"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               Margin="0,3,0,0"
-                                                               Text="{Binding ObservedAt, StringFormat=Observed: {0:HH:mm:ss}}"/>
-
-                                                </StackPanel>
-
-                                                <StackPanel Grid.Column="2"
-                                                            HorizontalAlignment="Right">
-
-                                                    <TextBlock Text="{Binding Outcome}"
-                                                               FontSize="11"
-                                                               FontWeight="SemiBold"
-                                                               HorizontalAlignment="Right">
-
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-
-                                                                <Setter Property="Foreground"
-                                                                        Value="{DynamicResource TextSecondaryBrush}"/>
-
-                                                                <Style.Triggers>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="Succeeded">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource SuccessBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="TimedOut">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource WarningBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="ConnectionRefused">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource WarningBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="NameNotFound">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource WarningBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="NoRecords">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource WarningBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="Failed">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource DangerBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="Error">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource DangerBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="Cancelled">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource TextSecondaryBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                    <DataTrigger Binding="{Binding Outcome}"
-                                                                                 Value="Skipped">
-                                                                        <Setter Property="Foreground"
-                                                                                Value="{DynamicResource TextSecondaryBrush}"/>
-                                                                    </DataTrigger>
-
-                                                                </Style.Triggers>
-
-                                                            </Style>
-                                                        </TextBlock.Style>
-
-                                                    </TextBlock>
-
-                                                    <TextBlock Text="{Binding DurationMs, StringFormat={}{0} ms}"
-                                                               FontSize="10"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               Margin="0,5,0,0"
-                                                               HorizontalAlignment="Right"/>
-
-                                                </StackPanel>
-
-                                            </Grid>
-
-                                        </Border>
-
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
-
-                        </StackPanel>
-
-                    </Border>
-
-                    <!-- Connectivity Error -->
-                    <Border x:Name="ConnectivityErrorCard"
-                            Style="{StaticResource CardBorderStyle}"
-                            Background="{DynamicResource DangerSurfaceBrush}"
-                            Margin="0,0,0,0"
-                            VerticalAlignment="Stretch"
-                            Visibility="Collapsed">
-
-                        <StackPanel>
-
-                            <TextBlock Text="Unable to run connectivity tests"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource DangerBrush}"/>
-
-                            <TextBlock x:Name="ConnectivityErrorText"
-                                       FontSize="11"
-                                       Margin="0,6,0,0"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       TextWrapping="Wrap"/>
-
-                        </StackPanel>
-
-                    </Border>
+                    </Button>
 
                 </Grid>
-                <!-- End ConnectivityOutputPanel -->
 
-            </Grid>
-            <!-- End ConnectivityLayoutGrid -->
-
-            <!-- Network Interfaces section heading -->
-            <StackPanel Margin="0,4,0,10">
-
-                <TextBlock Text="NETWORK INTERFACES"
-                           Style="{StaticResource SectionTitleTextStyle}"/>
-
-                <TextBlock Text="Select an adapter to inspect its network configuration."
-                           Style="{StaticResource PageSubtitleTextStyle}"
-                           Margin="0,4,0,0"/>
-
-            </StackPanel>
-
-            <!-- Network Interfaces Master-Detail Layout -->
-            <Grid x:Name="NetworkInterfacesLayoutGrid"
-                  Margin="0,0,0,14"
-                  SizeChanged="NetworkInterfacesLayoutGrid_SizeChanged">
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.42*"/>
-                    <ColumnDefinition Width="0.58*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="0"/>
-                </Grid.RowDefinitions>
-
-                <!-- =========================================== -->
-                <!-- LEFT: ADAPTER LIST                          -->
-                <!-- =========================================== -->
-
-                <Border x:Name="AdapterListCard"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Style="{StaticResource CardBorderStyle}"
-                        Margin="0,0,8,0"
-                        VerticalAlignment="Stretch">
+                <!-- Adapter Summary -->
+                <Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,14">
 
                     <StackPanel>
 
-                        <!-- List heading -->
+                        <!-- Summary heading -->
                         <Grid Margin="0,0,0,14">
 
                             <Grid.ColumnDefinitions>
@@ -863,329 +66,1174 @@
 
                             <StackPanel>
 
-                                <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="ADAPTER LIST"
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_LocalAdapters}"
                                            FontWeight="Bold"
                                            Foreground="{DynamicResource PrimaryBrush}"/>
 
-                                <TextBlock Text="Choose a network interface to inspect."
-                                           FontSize="11"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,5,0,0"
-                                           TextWrapping="Wrap"/>
+                                <TextBlock x:Name="StatusText"
+                                           Text="{DynamicResource Diagnostics_WaitingAdapters}"
+                                           FontSize="12"
+                                           Margin="0,7,0,0"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
 
                             </StackPanel>
 
-                            <Border Grid.Column="1"
-                                    Background="{DynamicResource SurfaceElevatedBrush}"
-                                    BorderBrush="{DynamicResource BorderBrushSoft}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="9,5"
-                                    VerticalAlignment="Top">
-
-                                <TextBlock x:Name="AdapterListCountText"
-                                           Text="0 interfaces"
-                                           FontSize="10"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
-
-                            </Border>
+                            <TextBlock x:Name="LastUpdatedText"
+                                       Grid.Column="1"
+                                       Style="{StaticResource MetadataTextStyle}"
+                                       Text="{DynamicResource Diagnostics_NotRefreshed}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center"/>
 
                         </Grid>
 
-                        <!-- Single grouped ListBox -->
-                        <ListBox x:Name="AdapterListBox"
-                                 ItemsSource="{Binding AdapterListView}"
-                                 SelectionChanged="AdapterListBox_SelectionChanged"
-                                 MaxHeight="620"
-                                 Background="Transparent"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"
-                                 BorderThickness="0"
-                                 Padding="0"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 HorizontalContentAlignment="Stretch">
+                        <!-- Adapter category statistics -->
+                        <UniformGrid x:Name="AdapterSummaryStats"
+                                     Columns="5"
+                                     SizeChanged="AdapterSummaryStats_SizeChanged">
 
-                            <!-- Group headings -->
-                            <ListBox.GroupStyle>
+                            <!-- Physical -->
+                            <StackPanel Margin="0,0,10,0">
 
-                                <GroupStyle>
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_Physical}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
 
-                                    <GroupStyle.HeaderTemplate>
-                                        <DataTemplate>
+                                <TextBlock x:Name="PhysicalAdapterCountText"
+                                           Text="—"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Margin="0,4,0,0"/>
 
-                                            <Grid Margin="0,14,0,8">
+                            </StackPanel>
 
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
+                            <!-- Software / Virtual -->
+                            <StackPanel Margin="8,0">
 
-                                                <TextBlock Text="{Binding Name}"
-                                                           FontSize="12"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource TextPrimaryBrush}"
-                                                           VerticalAlignment="Center"/>
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_Software}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
 
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding ItemCount}"
-                                                           FontSize="10"
-                                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                                           VerticalAlignment="Center"/>
+                                <TextBlock x:Name="VirtualAdapterCountText"
+                                           Text="—"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Margin="0,4,0,0"/>
 
-                                            </Grid>
+                            </StackPanel>
 
-                                        </DataTemplate>
-                                    </GroupStyle.HeaderTemplate>
+                            <!-- Tunnel -->
+                            <StackPanel Margin="8,0">
 
-                                    <!-- Adapter rows inside each group -->
-                                    <GroupStyle.Panel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Vertical"/>
-                                        </ItemsPanelTemplate>
-                                    </GroupStyle.Panel>
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_Tunnel}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
 
-                                </GroupStyle>
+                                <TextBlock x:Name="TunnelAdapterCountText"
+                                           Text="—"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Margin="0,4,0,0"/>
 
-                            </ListBox.GroupStyle>
+                            </StackPanel>
 
-                            <!-- Adapter row appearance -->
-                            <ListBox.ItemContainerStyle>
+                            <!-- Other / Unknown -->
+                            <StackPanel Margin="8,0">
 
-                                <Style TargetType="{x:Type ListBoxItem}">
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_Other}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
 
-                                    <Setter Property="Padding"
-                                            Value="0"/>
+                                <TextBlock x:Name="OtherAdapterCountText"
+                                           Text="—"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Margin="0,4,0,0"/>
 
-                                    <Setter Property="Margin"
-                                            Value="0,0,0,7"/>
+                            </StackPanel>
 
-                                    <Setter Property="HorizontalContentAlignment"
-                                            Value="Stretch"/>
+                            <!-- Link Up -->
+                            <StackPanel Margin="8,0">
 
-                                    <Setter Property="VerticalContentAlignment"
-                                            Value="Center"/>
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_LinkUp}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
 
-                                    <Setter Property="Background"
-                                            Value="Transparent"/>
+                                <TextBlock x:Name="UpAdapterCountText"
+                                           Text="—"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SuccessBrush}"
+                                           Margin="0,4,0,0"/>
 
-                                    <Setter Property="BorderThickness"
-                                            Value="0"/>
+                            </StackPanel>
 
-                                    <Setter Property="Template">
+                        </UniformGrid>
 
-                                        <Setter.Value>
+                        <TextBlock Text="{DynamicResource Diagnostics_ClassificationNote}"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   Margin="0,12,0,0"
+                                   TextWrapping="Wrap"/>
 
-                                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    </StackPanel>
 
-                                                <Border x:Name="ItemBorder"
-                                                        Background="{DynamicResource SurfaceElevatedBrush}"
-                                                        BorderBrush="{DynamicResource BorderBrushSoft}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="10"
-                                                        Padding="12">
+                </Border>
 
-                                                    <ContentPresenter
-                                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                <!-- Loading state -->
+                <TextBlock x:Name="LoadingText"
+                           Text="{DynamicResource Diagnostics_ReadingAdapters}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           Margin="0,8,0,6"
+                           Visibility="Collapsed"/>
+                <ProgressBar x:Name="AdapterLoadingProgressBar"
+                             Height="3"
+                             IsIndeterminate="True"
+                             Margin="0,0,0,14"
+                             Visibility="Collapsed"/>
 
-                                                </Border>
+                <!-- Empty state -->
+                <Border x:Name="EmptyState"
+                        Style="{StaticResource CardBorderStyle}"
+                        Visibility="Collapsed"
+                        Margin="0,0,0,14">
 
-                                                <ControlTemplate.Triggers>
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Diagnostics_NoAdapters}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"/>
 
-                                                    <!-- Hover -->
-                                                    <Trigger Property="IsMouseOver"
-                                                             Value="True">
+                        <TextBlock Text="{DynamicResource Diagnostics_NoAdaptersDescription}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   Margin="0,6,0,0"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
 
-                                                        <Setter TargetName="ItemBorder"
-                                                                Property="BorderBrush"
-                                                                Value="{DynamicResource PrimaryBrush}"/>
+                </Border>
 
-                                                    </Trigger>
+                <!-- Error state -->
+                <Border x:Name="ErrorCard"
+                        Style="{StaticResource CardBorderStyle}"
+                        Background="{DynamicResource DangerSurfaceBrush}"
+                        Visibility="Collapsed"
+                        Margin="0,0,0,14">
 
-                                                    <!-- Selected -->
-                                                    <Trigger Property="IsSelected"
-                                                             Value="True">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource Diagnostics_UnableReadAdapters}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource DangerBrush}"/>
 
-                                                        <Setter TargetName="ItemBorder"
-                                                                Property="Background"
-                                                                Value="{DynamicResource SurfaceGlassBrush}"/>
+                        <TextBlock x:Name="ErrorText"
+                                   FontSize="11"
+                                   Margin="0,6,0,0"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    </StackPanel>
 
-                                                        <Setter TargetName="ItemBorder"
-                                                                Property="BorderBrush"
-                                                                Value="{DynamicResource PrimaryBrush}"/>
+                </Border>
 
-                                                    </Trigger>
+                <!-- Responsive Connectivity Layout -->
+                <Grid x:Name="ConnectivityLayoutGrid"
+                      Margin="0,0,0,14"
+                      SizeChanged="ConnectivityLayoutGrid_SizeChanged">
 
-                                                    <!-- Disabled -->
-                                                    <Trigger Property="IsEnabled"
-                                                             Value="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.9*"/>
+                        <ColumnDefinition Width="1.1*"/>
+                    </Grid.ColumnDefinitions>
 
-                                                        <Setter TargetName="ItemBorder"
-                                                                Property="Opacity"
-                                                                Value="0.55"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="0"/>
+                    </Grid.RowDefinitions>
 
-                                                    </Trigger>
+                    <!-- Connectivity Tests -->
+                    <Border x:Name="ConnectivityTestsCard"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Style="{StaticResource CardBorderStyle}"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Stretch">
 
-                                                </ControlTemplate.Triggers>
+                        <StackPanel>
 
-                                            </ControlTemplate>
+                            <StackPanel Margin="0,0,0,18">
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_ConnectivityTests}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource PrimaryBrush}"/>
 
-                                        </Setter.Value>
+                                <TextBlock Text="{DynamicResource Diagnostics_ConnectivityDescription}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="0,5,0,0"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
 
-                                    </Setter>
+                            <!-- Network adapter -->
+                            <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                       Text="{DynamicResource Diagnostics_NetworkAdapter}"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       Margin="0,0,0,7"/>
 
-                                </Style>
+                            <ComboBox x:Name="AdapterComboBox"
+                                      ItemsSource="{Binding Adapters}"
+                                      DisplayMemberPath="Name"
+                                      SelectionChanged="AdapterComboBox_SelectionChanged"
+                                      ToolTip="{DynamicResource Diagnostics_SelectAdapterTooltip}"/>
 
-                            </ListBox.ItemContainerStyle>
+                            <!-- Source IPv4 and Gateway -->
+                            <Grid Margin="0,14,0,0">
 
-                            <!-- Adapter row content -->
-                            <ListBox.ItemTemplate>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                                <DataTemplate>
+                                <StackPanel Margin="0,0,8,0">
 
-                                    <Grid MinHeight="58">
+                                    <TextBlock Text="{DynamicResource Diagnostics_SourceIPv4}"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,0,0,7"/>
+
+                                    <ComboBox x:Name="SourceIpv4ComboBox"
+                                              SelectionChanged="SourceIpv4ComboBox_SelectionChanged"
+                                              ToolTip="{DynamicResource Diagnostics_SourceTooltip}"/>
+
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1"
+                                            Margin="8,0,0,0">
+
+                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                               Text="{DynamicResource Diagnostics_DefaultGatewayLabel}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,0,0,7"/>
+
+                                    <TextBlock x:Name="GatewayValueText"
+                                               Text="{DynamicResource Common_NotConfigured}"
+                                               FontSize="13"
+                                               VerticalAlignment="Center"
+                                               MinHeight="38"/>
+
+                                </StackPanel>
+
+                            </Grid>
+
+                            <Separator Margin="0,16,0,16"
+                                       Background="{DynamicResource BorderBrushSoft}"/>
+
+                            <!-- TCP and DNS configuration side by side -->
+                            <Grid>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- ================================= -->
+                                <!-- TCP CONNECTION - LEFT COLUMN     -->
+                                <!-- ================================= -->
+
+                                <StackPanel Grid.Column="0"
+                                            Margin="0,0,14,0">
+
+                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                               Text="{DynamicResource Diagnostics_TcpConnection}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource PrimaryBrush}"/>
+
+                                    <TextBlock Text="{DynamicResource Diagnostics_TcpOptional}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,5,0,10"
+                                               MinHeight="30"
+                                               TextWrapping="Wrap"/>
+
+                                    <Grid>
 
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- Adapter identity -->
-                                        <StackPanel Grid.Column="0"
-                                                    Margin="0,0,10,0">
+                                        <!-- Target IPv4 -->
+                                        <StackPanel Margin="0,0,8,0">
 
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontSize="12"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                                       TextWrapping="Wrap"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       MaxHeight="38"
-                                                       ToolTip="{Binding Name}"/>
-
-                                            <TextBlock Text="{Binding Description}"
+                                            <TextBlock Text="{DynamicResource Diagnostics_TargetIPv4}"
                                                        FontSize="10"
                                                        Foreground="{DynamicResource TextSecondaryBrush}"
-                                                       Margin="0,4,0,0"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       ToolTip="{Binding Description}"/>
+                                                       Margin="0,0,0,6"/>
 
-                                            <TextBlock Text="{Binding InterfaceTypeText}"
-                                                       FontSize="10"
-                                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                                       Margin="0,3,0,0"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       ToolTip="{Binding InterfaceTypeText}"/>
+                                            <TextBox x:Name="TcpTargetTextBox"
+                                                     Text=""
+                                                     MaxLength="15"
+                                                     TextChanged="ConnectivityInputs_TextChanged"
+                                                     ToolTip="{DynamicResource Diagnostics_TargetExample}"/>
 
                                         </StackPanel>
 
-                                        <!-- Link status -->
-                                        <Border Grid.Column="1"
-                                                Style="{StaticResource AdapterStatusBadgeStyle}"
-                                                VerticalAlignment="Top">
+                                        <!-- Port -->
+                                        <StackPanel Grid.Column="1"
+                                                    Margin="8,0,0,0">
 
-                                            <TextBlock Text="{Binding StatusText}"
-                                                       FontSize="10"
-                                                       FontWeight="SemiBold">
+                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                       Text="{DynamicResource Diagnostics_Port}"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       Margin="0,0,0,6"/>
 
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
+                                            <TextBox x:Name="TcpPortTextBox"
+                                                     Text=""
+                                                     MaxLength="5"
+                                                     MinWidth="84"
+                                                     TextChanged="ConnectivityInputs_TextChanged"
+                                                     ToolTip="{DynamicResource Diagnostics_PortRange}"/>
 
-                                                        <Setter Property="Foreground"
-                                                                Value="{DynamicResource TextSecondaryBrush}"/>
-
-                                                        <Style.Triggers>
-
-                                                            <DataTrigger Binding="{Binding StatusText}"
-                                                                         Value="Up">
-                                                                <Setter Property="Foreground"
-                                                                        Value="{DynamicResource SuccessBrush}"/>
-                                                            </DataTrigger>
-
-                                                            <DataTrigger Binding="{Binding StatusText}"
-                                                                         Value="Down">
-                                                                <Setter Property="Foreground"
-                                                                        Value="{DynamicResource WarningBrush}"/>
-                                                            </DataTrigger>
-
-                                                            <DataTrigger Binding="{Binding StatusText}"
-                                                                         Value="Disabled">
-                                                                <Setter Property="Foreground"
-                                                                        Value="{DynamicResource DangerBrush}"/>
-                                                            </DataTrigger>
-
-                                                        </Style.Triggers>
-
-                                                    </Style>
-                                                </TextBlock.Style>
-
-                                            </TextBlock>
-
-                                        </Border>
+                                        </StackPanel>
 
                                     </Grid>
 
-                                </DataTemplate>
+                                </StackPanel>
 
-                            </ListBox.ItemTemplate>
+                                <!-- Vertical separator -->
+                                <Border Grid.Column="1"
+                                        Width="1"
+                                        Background="{DynamicResource BorderBrushSoft}"
+                                        Margin="0,2,0,2"/>
 
-                        </ListBox>
+                                <!-- ================================= -->
+                                <!-- DNS RESOLUTION - RIGHT COLUMN    -->
+                                <!-- ================================= -->
 
-                    </StackPanel>
+                                <StackPanel Grid.Column="2"
+                                            Margin="14,0,0,0">
 
-                </Border>
+                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                               Text="{DynamicResource Diagnostics_DnsResolution}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource PrimaryBrush}"/>
 
-                <!-- =========================================== -->
-                <!-- RIGHT: ADAPTER INSPECTOR                    -->
-                <!-- =========================================== -->
+                                    <TextBlock Text="{DynamicResource Diagnostics_DnsOptional}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,5,0,10"
+                                               MinHeight="30"
+                                               TextWrapping="Wrap"/>
 
-                <Border x:Name="AdapterInspectorCard"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Style="{StaticResource CardBorderStyle}"
-                        Margin="8,0,0,0"
-                        MinHeight="420"
-                        VerticalAlignment="Stretch">
+                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                               Text="{DynamicResource Diagnostics_Hostname}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,0,0,6"/>
 
-                    <Grid>
+                                    <TextBox x:Name="DnsHostTextBox"
+                                             Text=""
+                                             TextChanged="ConnectivityInputs_TextChanged"
+                                             ToolTip="{DynamicResource Diagnostics_HostnameExample}"/>
 
-                        <!-- No selection -->
-                        <StackPanel x:Name="AdapterInspectorPlaceholder"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    MaxWidth="340">
+                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                               Text="{DynamicResource Diagnostics_DnsServer}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,10,0,5"/>
 
-                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="ADAPTER INSPECTOR"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource PrimaryBrush}"
-                                       HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="DnsServerValueText"
+                                               Text="{DynamicResource Common_NotConfigured}"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"
+                                               TextWrapping="Wrap"/>
 
-                            <TextBlock Text="Select a network adapter"
-                                       FontSize="17"
-                                       FontWeight="SemiBold"
-                                       Margin="0,12,0,0"
-                                       HorizontalAlignment="Center"
-                                       TextAlignment="Center"/>
+                                </StackPanel>
 
-                            <TextBlock Text="Choose an interface from the list to view its IP configuration, gateway, DNS servers and hardware information."
-                                       FontSize="12"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       Margin="0,8,0,0"
-                                       TextWrapping="Wrap"
-                                       TextAlignment="Center"/>
+                            </Grid>
+
+                            <Separator Margin="0,16,0,16"
+                                       Background="{DynamicResource BorderBrushSoft}"/>
+
+                            <!-- Run button and description -->
+                            <Grid>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{DynamicResource Diagnostics_GatewayAlways}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,12,0"/>
+
+                                <Button x:Name="RunTestsButton"
+                                        Grid.Column="1"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        MinWidth="130"
+                                        Click="RunConnectivityTests_Click">
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconRunGeometry}"
+                                              Fill="{DynamicResource PrimaryButtonForegroundBrush}"
+                                              Width="12"
+                                              Height="12"
+                                              Stretch="Uniform"
+                                              Margin="0,0,7,0"/>
+                                        <TextBlock x:Name="RunTestsButtonText"
+                                                   Text="{DynamicResource Diagnostics_RunTests}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                            </Grid>
 
                         </StackPanel>
 
-                        <!-- Selected adapter details -->
-                        <ContentControl x:Name="AdapterInspectorContent">
+                    </Border>
 
-                            <ContentControl.ContentTemplate>
+                    <!-- Right column: Results and errors -->
+                    <Grid x:Name="ConnectivityOutputPanel"
+                          Grid.Row="0"
+                          Grid.Column="1"
+                          Margin="8,0,0,0"
+                          VerticalAlignment="Stretch">
 
-                                <DataTemplate>
+                        <!-- Initial empty result state -->
+                        <!-- Initial diagnostic state -->
+                        <Border x:Name="ResultsPlaceholderCard"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Style="{StaticResource CardBorderStyle}"
+                                MinHeight="340"
+                                VerticalAlignment="Stretch">
+
+                            <StackPanel VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        MaxWidth="480">
+
+                                <!-- Main state -->
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_TestResults}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource PrimaryBrush}"
+                                           HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="{DynamicResource Diagnostics_Ready}"
+                                           Style="{StaticResource CardTitleTextStyle}"
+                                           Margin="0,10,0,0"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
+
+                                <TextBlock Text="{DynamicResource Diagnostics_ReadyDescription}"
+                                           Style="{StaticResource BodyTextStyle}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="0,7,0,0"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"/>
+
+                                <!-- Diagnostic Summary -->
+                                <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                                        BorderBrush="{DynamicResource BorderBrushSoft}"
+                                        BorderThickness="1"
+                                        CornerRadius="10"
+                                        Padding="14"
+                                        Margin="0,20,0,0">
 
                                     <StackPanel>
+
+                                        <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                   Text="{DynamicResource Diagnostics_Summary}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource PrimaryBrush}"/>
+
+                                        <!-- Adapter and source address -->
+                                        <Grid Margin="0,12,0,0">
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0"
+                                                        Margin="0,0,8,0">
+
+                                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                           Text="{DynamicResource Diagnostics_Adapter}"
+                                                           FontWeight="Bold"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                                                <TextBlock x:Name="SummaryAdapterText"
+                                                           Text="{DynamicResource Diagnostics_NotSelected}"
+                                                           FontSize="12"
+                                                           FontWeight="Medium"
+                                                           Margin="0,5,0,0"
+                                                           TextWrapping="Wrap"/>
+
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1"
+                                                        Margin="8,0,0,0">
+
+                                                <TextBlock Text="{DynamicResource Diagnostics_SourceIPv4}"
+                                                           FontSize="10"
+                                                           FontWeight="Bold"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                                                <TextBlock x:Name="SummarySourceText"
+                                                           Text="{DynamicResource Diagnostics_NotSelected}"
+                                                           FontSize="12"
+                                                           FontWeight="Medium"
+                                                           Margin="0,5,0,0"
+                                                           TextWrapping="Wrap"/>
+
+                                            </StackPanel>
+
+                                        </Grid>
+
+                                        <Separator Margin="0,12,0,12"
+                                                   Background="{DynamicResource BorderBrushSoft}"/>
+
+                                        <!-- Planned checks -->
+                                        <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                   Text="{DynamicResource Diagnostics_PlannedChecks}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                                        <TextBlock x:Name="SummaryChecksText"
+                                                   Text="{DynamicResource Diagnostics_SelectAdapterForChecks}"
+                                                   FontSize="12"
+                                                   Margin="0,5,0,0"
+                                                   TextWrapping="Wrap"/>
+
+                                        <TextBlock Text="{DynamicResource Diagnostics_GatewayAutomatic}"
+                                                   FontSize="10"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   Margin="0,8,0,0"
+                                                   TextWrapping="Wrap"/>
+
+                                    </StackPanel>
+
+                                </Border>
+
+                            </StackPanel>
+
+                        </Border>
+
+                        <!-- Connectivity Results -->
+                        <Border x:Name="ResultsCard"
+                                Style="{StaticResource CardBorderStyle}"
+                                Margin="0,0,0,0"
+                                VerticalAlignment="Stretch"
+                                Visibility="Collapsed">
+
+                            <StackPanel>
+
+                                <Grid Margin="0,0,0,14">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel>
+
+                                        <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                   Text="{DynamicResource Diagnostics_TestResults}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource PrimaryBrush}"/>
+
+                                        <TextBlock x:Name="ConnectivityStatusText"
+                                                   Text="{DynamicResource Diagnostics_WaitingResults}"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,6,0,0"/>
+
+                                    </StackPanel>
+
+                                    <TextBlock x:Name="ConnectivityInfoText"
+                                               Grid.Column="1"
+                                               FontSize="10"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+
+                                </Grid>
+
+                                <ProgressBar x:Name="ConnectivityProgressBar"
+                                             Height="3"
+                                             IsIndeterminate="True"
+                                             Margin="0,0,0,12"
+                                             Visibility="Collapsed"/>
+
+                                <ItemsControl ItemsSource="{Binding EvidenceResults}">
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+
+                                            <Border Background="{DynamicResource SurfaceElevatedBrush}"
+                                                    BorderBrush="{DynamicResource BorderBrushSoft}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="10"
+                                                    Padding="12"
+                                                    Margin="0,0,0,8">
+
+                                                <Grid>
+
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="125"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Text="{Binding ProbeType, Converter={StaticResource EnumLocalizationConverter}}"
+                                                               FontSize="11"
+                                                               FontWeight="SemiBold"
+                                                               VerticalAlignment="Top"/>
+
+                                                    <StackPanel Grid.Column="1"
+                                                                Margin="10,0">
+
+                                                        <TextBlock Text="{Binding Target}"
+                                                                   FontSize="12"
+                                                                   FontWeight="Medium"
+                                                                   TextWrapping="Wrap"/>
+
+                                                        <TextBlock Text="{Binding Path=., Converter={StaticResource DiagnosticEvidenceDetailsConverter}}"
+                                                                   ToolTip="{Binding Details}"
+                                                                   FontSize="11"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   Margin="0,5,0,0"
+                                                                   TextWrapping="Wrap"/>
+
+                                                        <TextBlock FontSize="10"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   Margin="0,5,0,0">
+                                                            <Run Text="{DynamicResource Diagnostics_SourceLabel}"/>
+                                                            <Run Text="{Binding SourceAddress}"/>
+                                                        </TextBlock>
+
+                                                        <TextBlock FontSize="10"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   Margin="0,3,0,0">
+                                                            <Run Text="{DynamicResource Diagnostics_ObservedLabel}"/>
+                                                            <Run Text="{Binding ObservedAt, StringFormat={}{0:HH:mm:ss}}"/>
+                                                        </TextBlock>
+
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="2"
+                                                                HorizontalAlignment="Right">
+
+                                                        <TextBlock Text="{Binding Outcome, Converter={StaticResource EnumLocalizationConverter}}"
+                                                                   FontSize="11"
+                                                                   FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Right">
+
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{DynamicResource TextSecondaryBrush}"/>
+
+                                                                    <Style.Triggers>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="Succeeded">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource SuccessBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="TimedOut">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource WarningBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="ConnectionRefused">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource WarningBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="NameNotFound">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource WarningBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="NoRecords">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource WarningBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="Failed">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource DangerBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="Error">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource DangerBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="Cancelled">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource TextSecondaryBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                        <DataTrigger Binding="{Binding Outcome}"
+                                                                                     Value="Skipped">
+                                                                            <Setter Property="Foreground"
+                                                                                    Value="{DynamicResource TextSecondaryBrush}"/>
+                                                                        </DataTrigger>
+
+                                                                    </Style.Triggers>
+
+                                                                </Style>
+                                                            </TextBlock.Style>
+
+                                                        </TextBlock>
+
+                                                        <TextBlock Text="{Binding DurationMs, StringFormat={}{0} ms}"
+                                                                   FontSize="10"
+                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                                   Margin="0,5,0,0"
+                                                                   HorizontalAlignment="Right"/>
+
+                                                    </StackPanel>
+
+                                                </Grid>
+
+                                            </Border>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+
+                                </ItemsControl>
+
+                            </StackPanel>
+
+                        </Border>
+
+                        <!-- Connectivity Error -->
+                        <Border x:Name="ConnectivityErrorCard"
+                                Style="{StaticResource CardBorderStyle}"
+                                Background="{DynamicResource DangerSurfaceBrush}"
+                                Margin="0,0,0,0"
+                                VerticalAlignment="Stretch"
+                                Visibility="Collapsed">
+
+                            <StackPanel>
+
+                                <TextBlock Text="{DynamicResource Diagnostics_UnableRunTests}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource DangerBrush}"/>
+
+                                <TextBlock x:Name="ConnectivityErrorText"
+                                           FontSize="11"
+                                           Margin="0,6,0,0"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </Grid>
+                    <!-- End ConnectivityOutputPanel -->
+
+                </Grid>
+                <!-- End ConnectivityLayoutGrid -->
+
+                <!-- Network Interfaces section heading -->
+                <StackPanel Margin="0,4,0,10">
+
+                    <TextBlock Text="{DynamicResource Diagnostics_NetworkInterfaces}"
+                               Style="{StaticResource SectionTitleTextStyle}"/>
+
+                    <TextBlock Text="{DynamicResource Diagnostics_SelectAdapterInspect}"
+                               Style="{StaticResource PageSubtitleTextStyle}"
+                               Margin="0,4,0,0"/>
+
+                </StackPanel>
+
+                <!-- Network Interfaces Master-Detail Layout -->
+                <Grid x:Name="NetworkInterfacesLayoutGrid"
+                      Margin="0,0,0,14"
+                      SizeChanged="NetworkInterfacesLayoutGrid_SizeChanged">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.42*"/>
+                        <ColumnDefinition Width="0.58*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="0"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- =========================================== -->
+                    <!-- LEFT: ADAPTER LIST                          -->
+                    <!-- =========================================== -->
+
+                    <Border x:Name="AdapterListCard"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Style="{StaticResource CardBorderStyle}"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Stretch">
+
+                        <StackPanel>
+
+                            <!-- List heading -->
+                            <Grid Margin="0,0,0,14">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel>
+
+                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                               Text="{DynamicResource Diagnostics_AdapterList}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource PrimaryBrush}"/>
+
+                                    <TextBlock Text="{DynamicResource Diagnostics_ChooseInterface}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,5,0,0"
+                                               TextWrapping="Wrap"/>
+
+                                </StackPanel>
+
+                                <Border Grid.Column="1"
+                                        Background="{DynamicResource SurfaceElevatedBrush}"
+                                        BorderBrush="{DynamicResource BorderBrushSoft}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="9,5"
+                                        VerticalAlignment="Top">
+
+                                    <TextBlock x:Name="AdapterListCountText"
+                                               Text="{DynamicResource Diagnostics_ZeroInterfaces}"
+                                               FontSize="10"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                                </Border>
+
+                            </Grid>
+
+                            <!-- Single grouped ListBox -->
+                            <ListBox x:Name="AdapterListBox"
+                                     ItemsSource="{Binding AdapterListView}"
+                                     SelectionChanged="AdapterListBox_SelectionChanged"
+                                     MaxHeight="620"
+                                     Background="Transparent"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     BorderThickness="0"
+                                     Padding="0"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     HorizontalContentAlignment="Stretch">
+
+                                <!-- Group headings -->
+                                <ListBox.GroupStyle>
+
+                                    <GroupStyle>
+
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+
+                                                <Grid Margin="0,14,0,8">
+
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="12"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                                               VerticalAlignment="Center"/>
+
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding ItemCount}"
+                                                               FontSize="10"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               VerticalAlignment="Center"/>
+
+                                                </Grid>
+
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+
+                                        <!-- Adapter rows inside each group -->
+                                        <GroupStyle.Panel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Vertical"/>
+                                            </ItemsPanelTemplate>
+                                        </GroupStyle.Panel>
+
+                                    </GroupStyle>
+
+                                </ListBox.GroupStyle>
+
+                                <!-- Adapter row appearance -->
+                                <ListBox.ItemContainerStyle>
+
+                                    <Style TargetType="{x:Type ListBoxItem}">
+
+                                        <Setter Property="Padding"
+                                                Value="0"/>
+
+                                        <Setter Property="Margin"
+                                                Value="0,0,0,7"/>
+
+                                        <Setter Property="HorizontalContentAlignment"
+                                                Value="Stretch"/>
+
+                                        <Setter Property="VerticalContentAlignment"
+                                                Value="Center"/>
+
+                                        <Setter Property="Background"
+                                                Value="Transparent"/>
+
+                                        <Setter Property="BorderThickness"
+                                                Value="0"/>
+
+                                        <Setter Property="Template">
+
+                                            <Setter.Value>
+
+                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+
+                                                    <Border x:Name="ItemBorder"
+                                                            Background="{DynamicResource SurfaceElevatedBrush}"
+                                                            BorderBrush="{DynamicResource BorderBrushSoft}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="10"
+                                                            Padding="12">
+
+                                                        <ContentPresenter
+                                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+
+                                                    </Border>
+
+                                                    <ControlTemplate.Triggers>
+
+                                                        <!-- Hover -->
+                                                        <Trigger Property="IsMouseOver"
+                                                                 Value="True">
+
+                                                            <Setter TargetName="ItemBorder"
+                                                                    Property="BorderBrush"
+                                                                    Value="{DynamicResource PrimaryBrush}"/>
+
+                                                        </Trigger>
+
+                                                        <!-- Selected -->
+                                                        <Trigger Property="IsSelected"
+                                                                 Value="True">
+
+                                                            <Setter TargetName="ItemBorder"
+                                                                    Property="Background"
+                                                                    Value="{DynamicResource SurfaceGlassBrush}"/>
+
+                                                            <Setter TargetName="ItemBorder"
+                                                                    Property="BorderBrush"
+                                                                    Value="{DynamicResource PrimaryBrush}"/>
+
+                                                        </Trigger>
+
+                                                        <!-- Disabled -->
+                                                        <Trigger Property="IsEnabled"
+                                                                 Value="False">
+
+                                                            <Setter TargetName="ItemBorder"
+                                                                    Property="Opacity"
+                                                                    Value="0.55"/>
+
+                                                        </Trigger>
+
+                                                    </ControlTemplate.Triggers>
+
+                                                </ControlTemplate>
+
+                                            </Setter.Value>
+
+                                        </Setter>
+
+                                    </Style>
+
+                                </ListBox.ItemContainerStyle>
+
+                                <!-- Adapter row content -->
+                                <ListBox.ItemTemplate>
+
+                                    <DataTemplate>
+
+                                        <Grid MinHeight="58">
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Adapter identity -->
+                                            <StackPanel Grid.Column="0"
+                                                        Margin="0,0,10,0">
+
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                                           TextWrapping="Wrap"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           MaxHeight="38"
+                                                           ToolTip="{Binding Name}"/>
+
+                                                <TextBlock Text="{Binding Description}"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                                           Margin="0,4,0,0"
+                                                           TextWrapping="NoWrap"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           ToolTip="{Binding Description}"/>
+
+                                                <TextBlock Text="{Binding InterfaceTypeText}"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                                           Margin="0,3,0,0"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           ToolTip="{Binding InterfaceTypeText}"/>
+
+                                            </StackPanel>
+
+                                            <!-- Link status -->
+                                            <Border Grid.Column="1"
+                                                    Style="{StaticResource AdapterStatusBadgeStyle}"
+                                                    VerticalAlignment="Top">
+
+                                                <TextBlock Text="{Binding StatusText}"
+                                                           FontSize="10"
+                                                           FontWeight="SemiBold">
+
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+
+                                                            <Setter Property="Foreground"
+                                                                    Value="{DynamicResource TextSecondaryBrush}"/>
+
+                                                            <Style.Triggers>
+
+                                                                <DataTrigger Binding="{Binding StatusText}"
+                                                                             Value="Up">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{DynamicResource SuccessBrush}"/>
+                                                                </DataTrigger>
+
+                                                                <DataTrigger Binding="{Binding StatusText}"
+                                                                             Value="Down">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{DynamicResource WarningBrush}"/>
+                                                                </DataTrigger>
+
+                                                                <DataTrigger Binding="{Binding StatusText}"
+                                                                             Value="Disabled">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{DynamicResource DangerBrush}"/>
+                                                                </DataTrigger>
+
+                                                            </Style.Triggers>
+
+                                                        </Style>
+                                                    </TextBlock.Style>
+
+                                                </TextBlock>
+
+                                            </Border>
+
+                                        </Grid>
+
+                                    </DataTemplate>
+
+                                </ListBox.ItemTemplate>
+
+                            </ListBox>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- =========================================== -->
+                    <!-- RIGHT: ADAPTER INSPECTOR                    -->
+                    <!-- =========================================== -->
+
+                    <Border x:Name="AdapterInspectorCard"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Style="{StaticResource CardBorderStyle}"
+                            Margin="8,0,0,0"
+                            MinHeight="420"
+                            VerticalAlignment="Stretch">
+
+                        <Grid>
+
+                            <!-- No selection -->
+                            <StackPanel x:Name="AdapterInspectorPlaceholder"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        MaxWidth="340">
+
+                                <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                           Text="{DynamicResource Diagnostics_AdapterInspector}"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource PrimaryBrush}"
+                                           HorizontalAlignment="Center"/>
+
+                                <TextBlock Text="{DynamicResource Diagnostics_SelectAdapter}"
+                                           FontSize="17"
+                                           FontWeight="SemiBold"
+                                           Margin="0,12,0,0"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
+
+                                <TextBlock Text="{DynamicResource Diagnostics_ChooseInterfaceDetails}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Margin="0,8,0,0"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"/>
+
+                            </StackPanel>
+
+                            <!-- Selected adapter details -->
+                            <ContentControl x:Name="AdapterInspectorContent">
+
+                                <ContentControl.ContentTemplate>
+
+                                    <DataTemplate>
+
+                                        <StackPanel>
 
                                             <!-- Adapter heading -->
                                             <Grid Margin="0,0,0,18">
@@ -1262,7 +1310,8 @@
                                             </Grid>
 
                                             <!-- Interface metadata -->
-                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="INTERFACE INFORMATION"
+                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                       Text="{DynamicResource Diagnostics_InterfaceInformation}"
                                                        FontWeight="Bold"
                                                        Foreground="{DynamicResource PrimaryBrush}"
                                                        Margin="0,0,0,12"/>
@@ -1270,7 +1319,8 @@
                                             <UniformGrid Columns="2">
 
                                                 <StackPanel Margin="0,0,12,14">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="CATEGORY"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_Category}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1281,7 +1331,8 @@
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,0,0,14">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="INTERFACE TYPE"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_InterfaceType}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1298,7 +1349,8 @@
                                                        Background="{DynamicResource BorderBrushSoft}"/>
 
                                             <!-- IP configuration -->
-                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="IP CONFIGURATION"
+                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                       Text="{DynamicResource Diagnostics_IpConfiguration}"
                                                        FontWeight="Bold"
                                                        Foreground="{DynamicResource PrimaryBrush}"
                                                        Margin="0,0,0,12"/>
@@ -1306,7 +1358,7 @@
                                             <UniformGrid Columns="2">
 
                                                 <StackPanel Margin="0,0,12,16">
-                                                    <TextBlock Text="IPv4 ADDRESS"
+                                                    <TextBlock Text="{DynamicResource Diagnostics_Ipv4Address}"
                                                                FontSize="10"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -1318,7 +1370,8 @@
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,0,0,16">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="SUBNET MASK"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_SubnetMask}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1329,7 +1382,8 @@
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,0,12,16">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="DEFAULT GATEWAY"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_DefaultGatewayLabel}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1340,7 +1394,8 @@
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,0,0,16">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="DNS SERVERS"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_DnsServers}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1356,7 +1411,8 @@
                                                        Background="{DynamicResource BorderBrushSoft}"/>
 
                                             <!-- Hardware and visibility -->
-                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="HARDWARE INFORMATION"
+                                            <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                       Text="{DynamicResource Diagnostics_HardwareInformation}"
                                                        FontWeight="Bold"
                                                        Foreground="{DynamicResource PrimaryBrush}"
                                                        Margin="0,0,0,12"/>
@@ -1364,7 +1420,8 @@
                                             <UniformGrid Columns="2">
 
                                                 <StackPanel Margin="0,0,12,14">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="MAC ADDRESS"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_MacAddress}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1375,7 +1432,8 @@
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,0,0,14">
-                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="VISIBILITY"
+                                                    <TextBlock Style="{StaticResource FieldLabelTextStyle}"
+                                                               Text="{DynamicResource Diagnostics_Visibility}"
                                                                FontWeight="Bold"
                                                                Foreground="{DynamicResource TextSecondaryBrush}"/>
 
@@ -1386,19 +1444,19 @@
 
                                             </UniformGrid>
 
-                                    </StackPanel>
+                                        </StackPanel>
 
-                                </DataTemplate>
+                                    </DataTemplate>
 
-                            </ContentControl.ContentTemplate>
+                                </ContentControl.ContentTemplate>
 
-                        </ContentControl>
+                            </ContentControl>
 
-                    </Grid>
+                        </Grid>
 
-                </Border>
+                    </Border>
 
-            </Grid>
+                </Grid>
 
             </StackPanel>
         </Border>

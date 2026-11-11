@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:LANRescue.ConsoleApp.Controls"
-        Title="Device profile"
+        Title="{DynamicResource DeviceEditor_Title}"
         Width="900"
         Height="820"
         MinWidth="760"
@@ -40,13 +40,13 @@
                             VerticalAlignment="Center">
 
                     <TextBlock x:Name="DialogTitleText"
-                               Text="Add device"
+                               Text="{DynamicResource DeviceEditor_AddDevice}"
                                FontSize="22"
                                FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}"/>
 
                     <TextBlock
-                        Text="Enter the inventory identity and the latest known configuration."
+                        Text="{DynamicResource DeviceEditor_Description}"
                         FontSize="12"
                         Foreground="{DynamicResource TextSecondaryBrush}"
                         Margin="0,5,0,0"/>
@@ -59,8 +59,8 @@
                         Margin="8,0,0,0"
                         VerticalAlignment="Center"
                         Click="Cancel_Click"
-                        ToolTip="Close window"
-                        AutomationProperties.Name="Close window">
+                        ToolTip="{DynamicResource DeviceEditor_Close}"
+                        AutomationProperties.Name="{DynamicResource DeviceEditor_Close}">
                     <Path Data="{StaticResource IconCloseGeometry}"
                           Stroke="{DynamicResource TextPrimaryBrush}"
                           StrokeThickness="1.6"
@@ -82,7 +82,7 @@
                         Padding="18"
                         Margin="0,0,0,14">
                     <StackPanel>
-                        <TextBlock Text="DEVICE IDENTITY"
+                        <TextBlock Text="{DynamicResource DeviceEditor_Identity}"
                                    FontWeight="Bold"
                                    FontSize="12"
                                    Foreground="{DynamicResource PrimaryBrush}"
@@ -103,7 +103,7 @@
                             <StackPanel Grid.Row="0"
                                         Grid.Column="0"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Device code *"
+                                <TextBlock Text="{DynamicResource DeviceEditor_DeviceCode}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="DeviceCodeBox"
                                          Height="38"
@@ -112,7 +112,7 @@
                             <StackPanel Grid.Row="0"
                                         Grid.Column="2"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Device name / hostname *"
+                                <TextBlock Text="{DynamicResource DeviceEditor_DeviceName}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="DeviceNameBox"
                                          Height="38"
@@ -121,16 +121,22 @@
                             <StackPanel Grid.Row="1"
                                         Grid.Column="0"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Device type"
+                                <TextBlock Text="{DynamicResource DeviceEditor_DeviceType}"
                                            Margin="0,0,0,5"/>
                                 <ComboBox x:Name="DeviceTypeCombo"
                                           Height="38"
-                                          Padding="8,6"/>
+                                          Padding="8,6">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource EnumLocalizationConverter}}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </StackPanel>
                             <StackPanel Grid.Row="1"
                                         Grid.Column="2"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Department"
+                                <TextBlock Text="{DynamicResource DeviceEditor_Department}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="DepartmentBox"
                                          Height="38"
@@ -139,7 +145,7 @@
                             <StackPanel Grid.Row="2"
                                         Grid.Column="0"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Manufacturer"
+                                <TextBlock Text="{DynamicResource DeviceEditor_Manufacturer}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="ManufacturerBox"
                                          Height="38"
@@ -148,7 +154,7 @@
                             <StackPanel Grid.Row="2"
                                         Grid.Column="2"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Model"
+                                <TextBlock Text="{DynamicResource DeviceEditor_Model}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="ModelBox"
                                          Height="38"
@@ -157,7 +163,7 @@
                             <StackPanel Grid.Row="3"
                                         Grid.Column="0"
                                         Margin="0,0,0,0">
-                                <TextBlock Text="Serial number"
+                                <TextBlock Text="{DynamicResource DeviceEditor_SerialNumber}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="SerialNumberBox"
                                          Height="38"
@@ -165,7 +171,7 @@
                             </StackPanel>
                             <StackPanel Grid.Row="3"
                                         Grid.Column="2">
-                                <TextBlock Text="Location"
+                                <TextBlock Text="{DynamicResource DeviceEditor_Location}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="LocationBox"
                                          Height="38"
@@ -175,7 +181,7 @@
                                         Grid.Column="0"
                                         Grid.ColumnSpan="3"
                                         Margin="0,12,0,0">
-                                <TextBlock Text="Firmware version"
+                                <TextBlock Text="{DynamicResource DeviceEditor_FirmwareVersion}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="FirmwareVersionBox"
                                          Height="38"
@@ -190,7 +196,7 @@
                         Padding="18"
                         Margin="0,0,0,14">
                     <StackPanel>
-                        <TextBlock Text="PRIMARY NETWORK INTERFACE"
+                        <TextBlock Text="{DynamicResource DeviceEditor_NetworkInterface}"
                                    FontWeight="Bold"
                                    FontSize="12"
                                    Foreground="{DynamicResource PrimaryBrush}"
@@ -209,7 +215,7 @@
                             <StackPanel Grid.Row="0"
                                         Grid.Column="0"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Interface name"
+                                <TextBlock Text="{DynamicResource DeviceEditor_InterfaceName}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="InterfaceNameBox"
                                          Height="38"
@@ -218,7 +224,7 @@
                             <StackPanel Grid.Row="0"
                                         Grid.Column="2"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="MAC address"
+                                <TextBlock Text="{DynamicResource DeviceEditor_MacAddress}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="MacAddressBox"
                                          Height="38"
@@ -227,7 +233,7 @@
                             <StackPanel Grid.Row="1"
                                         Grid.Column="0"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="IPv4 address"
+                                <TextBlock Text="{DynamicResource DeviceEditor_Ipv4Address}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="Ipv4Box"
                                          Height="38"
@@ -236,7 +242,7 @@
                             <StackPanel Grid.Row="1"
                                         Grid.Column="2"
                                         Margin="0,0,0,12">
-                                <TextBlock Text="Prefix length"
+                                <TextBlock Text="{DynamicResource DeviceEditor_PrefixLength}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="PrefixLengthBox"
                                          Height="38"
@@ -244,22 +250,28 @@
                             </StackPanel>
                             <StackPanel Grid.Row="2"
                                         Grid.Column="0">
-                                <TextBlock Text="Address assignment"
+                                <TextBlock Text="{DynamicResource DeviceEditor_AddressAssignment}"
                                            Margin="0,0,0,5"/>
                                 <ComboBox x:Name="AssignmentModeCombo"
                                           Height="38"
-                                          Padding="8,6"/>
+                                          Padding="8,6">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource EnumLocalizationConverter}}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </StackPanel>
                             <StackPanel Grid.Row="2"
                                         Grid.Column="2">
-                                <TextBlock Text="Default gateway"
+                                <TextBlock Text="{DynamicResource DeviceEditor_DefaultGateway}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="GatewayBox"
                                          Height="38"
                                          Padding="10,4"/>
                             </StackPanel>
                         </Grid>
-                        <TextBlock Text="DNS servers (comma separated)"
+                        <TextBlock Text="{DynamicResource DeviceEditor_DnsServers}"
                                    Margin="0,12,0,5"/>
                         <TextBox x:Name="DnsServersBox"
                                  Height="38"
@@ -273,7 +285,7 @@
                         Padding="18"
                         Margin="0,0,0,14">
                     <StackPanel>
-                        <TextBlock Text="PRINTER DETAILS"
+                        <TextBlock Text="{DynamicResource DeviceEditor_PrinterDetails}"
                                    FontWeight="Bold"
                                    FontSize="12"
                                    Foreground="{DynamicResource PrimaryBrush}"
@@ -285,14 +297,14 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Driver name"
+                                <TextBlock Text="{DynamicResource DeviceEditor_DriverName}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="PrinterDriverBox"
                                          Height="38"
                                          Padding="10,4"/>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Port name"
+                                <TextBlock Text="{DynamicResource DeviceEditor_PortName}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="PrinterPortBox"
                                          Height="38"
@@ -306,14 +318,14 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Print server"
+                                <TextBlock Text="{DynamicResource DeviceEditor_PrintServer}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="PrintServerBox"
                                          Height="38"
                                          Padding="10,4"/>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Share name"
+                                <TextBlock Text="{DynamicResource DeviceEditor_ShareName}"
                                            Margin="0,0,0,5"/>
                                 <TextBox x:Name="ShareNameBox"
                                          Height="38"
@@ -327,7 +339,7 @@
                         CornerRadius="14"
                         Padding="18">
                     <StackPanel>
-                        <TextBlock Text="NOTES"
+                        <TextBlock Text="{DynamicResource DeviceEditor_Notes}"
                                    FontWeight="Bold"
                                    FontSize="12"
                                    Foreground="{DynamicResource PrimaryBrush}"
@@ -350,7 +362,7 @@
                 BorderThickness="0,1,0,0">
             <DockPanel LastChildFill="False">
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="* Required fields"
+                    <TextBlock Text="{DynamicResource DeviceEditor_RequiredFields}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                FontSize="12"/>
 
@@ -364,14 +376,14 @@
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal">
-                    <Button Content="Cancel"
+                    <Button Content="{DynamicResource DeviceEditor_Cancel}"
                             Width="96"
                             Height="38"
                             Margin="0,0,8,0"
                             IsCancel="True"
                             Click="Cancel_Click"
                             FontSize="13"/>
-                    <Button Content="Save device"
+                    <Button Content="{DynamicResource DeviceEditor_Save}"
                             Width="120"
                             Height="38"
                             Style="{StaticResource PrimaryButtonStyle}"
