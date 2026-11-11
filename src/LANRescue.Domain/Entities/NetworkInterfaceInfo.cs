@@ -6,6 +6,11 @@ namespace LANRescue.Domain.Entities;
 public sealed record NetworkInterfaceInfo
 {
     public required string Name { get; init; }
+    /// <summary>
+    /// Stable operating-system identifier for this network interface.
+    /// On Windows, this should be the interface GUID.
+    /// </summary>
+    public string? InterfaceId { get; init; }
     public string? Description { get; init; }
     public string? MacAddress { get; init; }
     public NetworkLinkStatus LinkStatus { get; init; } = NetworkLinkStatus.Unknown;
