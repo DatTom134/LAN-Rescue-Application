@@ -2,9 +2,6 @@ using LANRescue.Domain.Enums;
 
 namespace LANRescue.Domain.Entities;
 
-/// <summary>
-/// Represents the complete IPv4 configuration of one network interface.
-/// </summary>
 public sealed record IpNetworkConfiguration
 {
     public IpAssignmentMode AssignmentMode { get; init; }
@@ -15,6 +12,9 @@ public sealed record IpNetworkConfiguration
     public int? PrefixLength { get; init; }
 
     public string? DefaultGateway { get; init; }
+
+    public DnsAssignmentMode DnsAssignmentMode { get; init; }
+        = DnsAssignmentMode.KeepExisting;
 
     public IReadOnlyList<string> DnsServers { get; init; }
         = Array.Empty<string>();

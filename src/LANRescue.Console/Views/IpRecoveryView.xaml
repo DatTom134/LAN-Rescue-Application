@@ -1,97 +1,239 @@
 <UserControl x:Class="LANRescue.ConsoleApp.Views.IpRecoveryView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Foreground="{DynamicResource TextPrimaryBrush}"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             Foreground="{DynamicResource TextPrimaryBrush}"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:LANRescue.ConsoleApp.Controls">
     <controls:SmoothScrollViewer Style="{StaticResource PageScrollViewerStyle}">
         <Border Style="{StaticResource PageContentContainerStyle}">
             <StackPanel>
-            <StackPanel Margin="0,0,0,20">
-                <TextBlock Text="{DynamicResource IpRecovery_Title}" Style="{StaticResource PageTitleTextStyle}"/>
-                <TextBlock Text="{DynamicResource IpRecovery_Description}"
-                           Style="{StaticResource PageSubtitleTextStyle}" Margin="0,5,0,0"/>
-            </StackPanel>
-
-            <Border Background="{DynamicResource WarningSurfaceBrush}"
-                    BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
-                    CornerRadius="12" Padding="16" Margin="0,0,0,16">
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource IpRecovery_DemoTitle}" Foreground="{DynamicResource WarningTextBrush}" FontWeight="Bold"/>
-                    <TextBlock Text="{DynamicResource IpRecovery_Safety}"
-                               Foreground="{DynamicResource WarningTextBrush}" Margin="0,5,0,0" TextWrapping="Wrap" FontSize="11"/>
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="{DynamicResource IpRecovery_Title}"
+                               Style="{StaticResource PageTitleTextStyle}"/>
+                    <TextBlock Text="{DynamicResource IpRecovery_Description}"
+                               Style="{StaticResource PageSubtitleTextStyle}"
+                               Margin="0,5,0,0"/>
                 </StackPanel>
-            </Border>
 
-            <Grid x:Name="RecoveryCardsGrid" SizeChanged="RecoveryCardsGrid_SizeChanged">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="0"/>
-                </Grid.RowDefinitions>
-            <Border x:Name="RecoveryTargetCard" Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource IpRecovery_TargetDevice}" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,12"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="170"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="36"/><RowDefinition Height="36"/><RowDefinition Height="36"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="{DynamicResource IpRecovery_Device}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
-                        <TextBlock Grid.Column="1" Text="QA-PC-02 · QA-PC-002" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Row="1" Text="{DynamicResource IpRecovery_CurrentIPv4}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="192.168.110.93" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Row="2" Text="{DynamicResource IpRecovery_ManagementChannel}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="11"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{DynamicResource IpRecovery_NotConnectedSample}" VerticalAlignment="Center" Foreground="{DynamicResource WarningBrush}"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
+                <Border Background="{DynamicResource WarningSurfaceBrush}"
+                        BorderBrush="{DynamicResource WarningBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="16"
+                        Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource IpRecovery_DemoTitle}"
+                                   Foreground="{DynamicResource WarningTextBrush}"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="{DynamicResource IpRecovery_Safety}"
+                                   Foreground="{DynamicResource WarningTextBrush}"
+                                   Margin="0,5,0,0"
+                                   TextWrapping="Wrap"
+                                   FontSize="11"/>
+                    </StackPanel>
+                </Border>
 
-            <Border x:Name="RecoveryConfigCard" Grid.Column="2" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
-                <StackPanel>
-                    <TextBlock Text="{DynamicResource IpRecovery_NewConfiguration}" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,14"/>
-                    <TextBlock Text="{DynamicResource IpRecovery_AddressMode}" Margin="0,0,0,5" FontSize="11"/>
-                    <ComboBox x:Name="AddressModeBox" SelectedIndex="0" Width="240" HorizontalAlignment="Left"
-                              IsEnabled="False" Margin="0,0,0,14">
-                        <ComboBoxItem Content="{DynamicResource IpRecovery_StaticSample}"/>
-                        <ComboBoxItem Content="{DynamicResource IpRecovery_DhcpFuture}"/>
-                    </ComboBox>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,12">
-                            <TextBlock Text="{DynamicResource IpRecovery_Ipv4Address}" Margin="0,0,0,5" FontSize="11"/>
-                            <TextBox Text="192.168.110.152" IsEnabled="False"/>
+                <Grid x:Name="RecoveryCardsGrid"
+                      SizeChanged="RecoveryCardsGrid_SizeChanged">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="0"/>
+                    </Grid.RowDefinitions>
+                    <Border x:Name="RecoveryTargetCard"
+                            Grid.Column="0"
+                            Style="{StaticResource CardBorderStyle}"
+                            Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource IpRecovery_TargetDevice}"
+                                       Style="{StaticResource SectionTitleTextStyle}"
+                                       Margin="0,0,0,12"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="36"/>
+                                    <RowDefinition Height="36"/>
+                                    <RowDefinition Height="36"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{DynamicResource IpRecovery_Device}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="QA-PC-02 · QA-PC-002"
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Grid.Row="1"
+                                           Text="{DynamicResource IpRecovery_CurrentIPv4}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"/>
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="1"
+                                           Text="192.168.110.93"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Grid.Row="2"
+                                           Text="{DynamicResource IpRecovery_ManagementChannel}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           FontSize="11"/>
+                                <TextBlock Grid.Row="2"
+                                           Grid.Column="1"
+                                           Text="{DynamicResource IpRecovery_NotConnectedSample}"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource WarningBrush}"/>
+                            </Grid>
                         </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
-                            <TextBlock Text="{DynamicResource IpRecovery_SubnetMask}" Margin="0,0,0,5" FontSize="11"/>
-                            <TextBox Text="255.255.255.0" IsEnabled="False"/>
+                    </Border>
+
+                    <Border x:Name="RecoveryConfigCard"
+                            Grid.Column="2"
+                            Style="{StaticResource CardBorderStyle}"
+                            Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource IpRecovery_NewConfiguration}"
+                                       Style="{StaticResource SectionTitleTextStyle}"
+                                       Margin="0,0,0,14"/>
+                            <TextBlock Text="{DynamicResource IpRecovery_AddressMode}"
+                                       Margin="0,0,0,5"
+                                       FontSize="11"/>
+                            <ComboBox x:Name="AddressModeBox"
+                                      SelectedIndex="0"
+                                      IsEnabled="True"
+                                      SelectionChanged="AddressModeBox_SelectionChanged">
+                                <ComboBoxItem Tag="Static"
+                                              Content="{DynamicResource IpRecovery_StaticIPv4}"/>
+                                <ComboBoxItem Tag="Dhcp"
+                                              Content="{DynamicResource IpRecovery_Dhcp}"/>
+                            </ComboBox>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0"
+                                            Grid.Column="0"
+                                            Margin="0,0,0,12">
+                                    <TextBlock Text="{DynamicResource IpRecovery_Ipv4Address}"/>
+                                    <TextBox x:Name="NewIpv4TextBox"
+                                             Margin="0,5,0,0"
+                                             ToolTip="Example: 192.168.110.152"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0"
+                                            Grid.Column="2"
+                                            Margin="0,0,0,12">
+                                    <TextBlock Text="{DynamicResource IpRecovery_PrefixLength}"/>
+                                    <TextBox x:Name="PrefixLengthTextBox"
+                                             Margin="0,5,0,0"
+                                             Text="24"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1"
+                                            Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource IpRecovery_DefaultGateway}"/>
+                                    <TextBox x:Name="GatewayTextBox"
+                                             Margin="0,5,0,0"/>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <StackPanel Margin="0,14,0,0">
+                                <TextBlock Text="{DynamicResource IpRecovery_DnsAssignment}"/>
+
+                                <ComboBox x:Name="DnsModeBox"
+                                          Margin="0,5,0,0"
+                                          SelectedIndex="2">
+
+                                    <ComboBoxItem Tag="Automatic"
+                                                  Content="{DynamicResource IpRecovery_DnsAutomatic}"/>
+
+                                    <ComboBoxItem Tag="Static"
+                                                  Content="{DynamicResource IpRecovery_DnsStatic}"/>
+
+                                    <ComboBoxItem Tag="KeepExisting"
+                                                  Content="{DynamicResource IpRecovery_DnsKeepExisting}"/>
+
+                                </ComboBox>
+
+                                <TextBlock
+                                    Text="{DynamicResource IpRecovery_DnsServers}"
+                                    Margin="0,12,0,5"/>
+
+                                <TextBox x:Name="DnsServersTextBox"
+                                         AcceptsReturn="True"
+                                         MinHeight="56"
+                                         TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         ToolTip="{DynamicResource IpRecovery_DnsHint}"/>
+                            </StackPanel>
+
+                            <Border Margin="0,16,0,0"
+                                    Padding="12"
+                                    CornerRadius="10"
+                                    BorderThickness="1"
+                                    BorderBrush="{DynamicResource BorderBrushSoft}"
+                                    Background="{DynamicResource SurfaceBrush}">
+
+                                <StackPanel>
+                                    <TextBlock
+                                        Text="{DynamicResource IpRecovery_Validation}"
+                                        FontWeight="SemiBold"/>
+
+                                    <TextBlock
+                                        x:Name="ValidationSummaryText"
+                                        Margin="0,6,0,8"
+                                        Text="{DynamicResource IpRecovery_NotValidated}"
+                                        TextWrapping="Wrap"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
+
+                                    <ItemsControl x:Name="ValidationIssuesList">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock
+                                                    Text="{Binding}"
+                                                    Margin="0,3"
+                                                    TextWrapping="Wrap"
+                                                    FontSize="11"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                </StackPanel>
+                            </Border>
+
+                            <Button x:Name="ValidatePlanButton"
+                                    Content="{DynamicResource IpRecovery_ValidatePlan}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,16,0,0"
+                                    Click="ValidatePlan_Click"/>
+
+                            <TextBlock Text="{DynamicResource IpRecovery_AddressWarning}"
+                                       Foreground="{DynamicResource WarningBrush}"
+                                       Margin="0,14,0,0"
+                                       TextWrapping="Wrap"
+                                       FontSize="11"/>
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="{DynamicResource IpRecovery_DefaultGateway}" Margin="0,0,0,5" FontSize="11"/>
-                            <TextBox Text="192.168.110.9" IsEnabled="False"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="2">
-                            <TextBlock Text="{DynamicResource IpRecovery_DnsServer}" Margin="0,0,0,5" FontSize="11"/>
-                            <TextBox Text="{DynamicResource IpRecovery_CompanyDns}" IsEnabled="False"/>
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock Text="{DynamicResource IpRecovery_AddressWarning}"
-                               Foreground="{DynamicResource WarningBrush}" Margin="0,14,0,0" TextWrapping="Wrap" FontSize="11"/>
-                </StackPanel>
-            </Border>
-            </Grid>
-            <Button Content="{DynamicResource IpRecovery_ApplyDisabled}" IsEnabled="False"
-                    Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Left"/>
+                    </Border>
+                </Grid>
+                <Button Content="{DynamicResource IpRecovery_ApplyDisabled}"
+                        IsEnabled="False"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>
     </controls:SmoothScrollViewer>

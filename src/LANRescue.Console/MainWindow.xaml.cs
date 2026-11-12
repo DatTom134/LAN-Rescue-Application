@@ -262,14 +262,41 @@ public partial class MainWindow : Window
 
         }, IpConflictsNavButton);
     }
+
     private void IpRecovery_Click(
-    object sender,
-    RoutedEventArgs e) =>
-    Navigate(
-        "Page_IpRecovery",
-        "recovery",
-        () => new IpRecoveryView(),
-        IpRecoveryNavButton);
+        object sender,
+        RoutedEventArgs e)
+    {
+        Navigate(
+            "Page_IpRecovery",
+            "recovery",
+            () =>
+            {
+                var databasePath = Path.Combine(
+                    Environment.GetFolderPath(
+                        Environment.SpecialFolder.LocalApplicationData),
+                    "LANRescue",
+                    "data",
+                    "lanrescue.db");
+
+                // Persistence
+                var repository =
+                    new SqliteDeviceRepository(databasePath);
+
+                // Application service
+                var catalog =
+                    new DeviceCatalogService(repository);
+
+                // IP Recovery service
+                var recoveryService =
+                    new IpRecoveryService(catalog);
+
+                // View receives the service
+                return new IpRecoveryView(recoveryService);
+            },
+            IpRecoveryNavButton);
+    }
+
     private void Diagnostics_Click(object sender, RoutedEventArgs e)
     {
         Navigate("Page_Diagnostics", "diagnostics", () =>
